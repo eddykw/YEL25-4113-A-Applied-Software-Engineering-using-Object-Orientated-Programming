@@ -1,0 +1,212 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Journey {
+
+    private int id;
+    private int fromZone;
+    private int toZone;
+    private String passengerType;
+    private String timeBand;
+    private double chargedFare;
+
+    public Journey(int id, int fromZone, int toZone,
+                   String passengerType, String timeBand,
+                   double chargedFare) {
+
+        this.id = id;
+        this.fromZone = fromZone;
+        this.toZone = toZone;
+        this.passengerType = passengerType;
+        this.timeBand = timeBand;
+        this.chargedFare = chargedFare;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getPassengerType() {
+        return passengerType;
+    }
+
+    public double getChargedFare() {
+        return chargedFare;
+    }
+
+    public void displayDetails() {
+        System.out.println("ID: " + id +
+                " | From: " + fromZone +
+                " | To: " + toZone +
+                " | Passenger: " + passengerType +
+                " | Time: " + timeBand +
+                " | Charged: £" + chargedFare);
+    }
+}
+
+
+class CityRideManager {
+
+    private List<Journey> journeyList = new ArrayList<>();
+    private int nextId = 1;
+
+    private double adultTotal = 0;
+    private double studentTotal = 0;
+    private double childTotal = 0;
+    private double seniorTotal = 0;
+
+    public void addJourney(int fromZone, int toZone,
+                           String passengerType, String timeBand) {
+
+        int zonesCrossed = Math.abs(toZone - fromZone) + 1;
+
+        double baseFare = zonesCrossed * 2.0;
+
+        double discount = 0;
+        double cap = 0;
+        double currentTotal = 0;
+
+        if (passengerType.equalsIgnoreCase("Adult")) {
+            discount = 0;
+            cap = 8.0;
+            currentTotal = adultTotal;
+        }
+        else if (passengerType.equalsIgnoreCase("Student")) {
+            discount = 0.25;
+            cap = 6.0;
+            currentTotal = studentTotal;
+        }
+        else if (passengerType.equalsIgnoreCase("Child")) {
+            discount = 0.5;
+            cap = 4.0;
+            currentTotal = childTotal;
+        }
+        else if (passengerType.equalsIgnoreCase("Senior")) {
+            discount = 0.3;
+            cap = 7.0;
+            currentTotal = seniorTotal;
+        }
+
+        double discountedFare = baseFare - (baseFare * discount);
+
+        double chargedFare;
+
+        if (currentTotal >= cap) {
+            chargedFare = 0;
+        }
+        else if (currentTotal + discountedFare > cap) {
+            chargedFare = cap - currentTotal;
+        }
+        else {
+            chargedFare = discountedFare;
+        }
+
+        if (passengerType.equalsIgnoreCase("Adult")) {
+            adultTotal += chargedFare;
+        }
+        else if (passengerType.equalsIgnoreCase("Student")) {
+            studentTotal += chargedFare;
+        }
+        else if (passengerType.equalsIgnoreCase("Child")) {
+            childTotal += chargedFare;
+        }
+        else if (passengerType.equalsIgnoreCase("Senior")) {
+            seniorTotal += chargedFare;
+        }
+
+        Journey j = new Journey(nextId++, fromZone, toZone,
+                passengerType, timeBand, chargedFare);
+
+        journeyList.add(j);
+
+        System.out.println("Journey added. Charged £" + chargedFare);
+    }
+
+    public void showAllJourneys() {
+        if (journeyList.isEmpty()) {
+            System.out.println("No journeys recorded.");
+        } else {
+            for (Journey j : journeyList) {
+                j.displayDetails();
+            }
+        }
+    }
+
+    public void showSummary() {
+
+        int totalJourneys = journeyList.size();
+        double totalCost = adultTotal + studentTotal + childTotal + seniorTotal;
+
+        double average = 0;
+        if (totalJourneys > 0) {
+            average = totalCost / totalJourneys;
+        }
+
+        System.out.println("Total Journeys: " + totalJourneys);
+        System.out.println("Total Cost: £" + totalCost);
+        System.out.println("Average Cost: £" + average);
+    }
+}
+
+
+public class CityRideLiteApp {
+
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+        CityRideManager manager = new CityRideManager();
+
+        int choice;
+
+        do {
+            System.out.println("\nCityRide Lite");
+            System.out.println("1. Add Journey");
+            System.out.println("2. View All Journeys");
+            System.out.println("3. Daily Summary");
+            System.out.println("4. Exit");
+            System.out.print("Choice: ");
+
+            choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.print("Enter From Zone (1-5): ");
+                    int from = scanner.nextInt();
+
+                    System.out.print("Enter To Zone (1-5): ");
+                    int to = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.print("Enter Passenger Type (Adult/Student/Child/Senior): ");
+                    String passenger = scanner.nextLine();
+
+                    System.out.print("Enter Time Band (Peak/OffPeak): ");
+                    String time = scanner.nextLine();
+
+                    manager.addJourney(from, to, passenger, time);
+                    break;
+
+                case 2:
+                    manager.showAllJourneys();
+                    break;
+
+                case 3:
+                    manager.showSummary();
+                    break;
+
+                case 4:
+                    System.out.println("Exiting...");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+
+        } while (choice != 4);
+
+        scanner.close();
+    }
+}
