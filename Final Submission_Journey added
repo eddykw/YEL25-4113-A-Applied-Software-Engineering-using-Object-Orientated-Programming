@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 // =============================================================================
-//  CityRide Lite 
+//  CityRide Lite
 //  - Active passenger session (type + optional name)
 //  - Add / list / filter / daily summary
 //  - Totals by passenger type (pre-discount, post-discount, charged, cap reached)
@@ -18,7 +18,7 @@ import java.util.Scanner;
 
 
 // =============================================================================
-//  CityRideDataset 
+//  CityRideDataset
 // =============================================================================
 final class CityRideDataset {
     private CityRideDataset() {}
@@ -75,5 +75,88 @@ final class CityRideDataset {
 
     private static void put(Map<String,BigDecimal> m, int f, int t, TimeBand b, String a) {
         m.put(key(f,t,b), money(a));
+    }
+}
+
+
+// =============================================================================
+// Journey
+// =============================================================================
+class Journey {
+    private static int counter = 1;
+
+    private int id;
+    private String date;
+    private int fromZone;
+    private int toZone;
+    private int zonesCrossed;
+
+    private CityRideDataset.PassengerType passengerType;
+    private CityRideDataset.TimeBand timeBand;
+
+    private BigDecimal baseFare;
+    private BigDecimal discountAmount;
+    private BigDecimal discountedFare;
+    private BigDecimal chargedFare;
+
+    public Journey(String date, int fromZone, int toZone,
+                   CityRideDataset.PassengerType passengerType,
+                   CityRideDataset.TimeBand timeBand) {
+        this.id = counter++;
+        this.date = date;
+        this.fromZone = fromZone;
+        this.toZone = toZone;
+        this.passengerType = passengerType;
+        this.timeBand = timeBand;
+
+        this.zonesCrossed = Math.abs(toZone - fromZone) + 1;
+
+        this.baseFare = CityRideDataset.getBaseFare(fromZone, toZone, timeBand);
+
+        BigDecimal rate = CityRideDataset.DISCOUNT_RATE.get(passengerType);
+        this.discountAmount = baseFare.multiply(rate).setScale(2, RoundingMode.HALF_UP);
+
+        this.discountedFare = baseFare.subtract(discountAmount).setScale(2, RoundingMode.HALF_UP);
+
+        // chargedFare is set by manager after cap check
+        this.chargedFare = discountedFare;
+    }
+
+    public static void resetCounter() { counter = 1; }
+
+    public int getId() { return id; }
+    public String getDate() { return date; }
+    public int getFromZone() { return fromZone; }
+    public int getToZone() { return toZone; }
+    public int getZonesCrossed() { return zonesCrossed; }
+    public CityRideDataset.PassengerType getPassengerType() { return passengerType; }
+    public CityRideDataset.TimeBand getTimeBand() { return timeBand; }
+
+    public BigDecimal getBaseFare() { return baseFare; }
+    public BigDecimal getDiscountAmount() { return discountAmount; }
+    public BigDecimal getDiscountedFare() { return discountedFare; }
+    public BigDecimal getChargedFare() { return chargedFare; }
+
+    public void setChargedFare(BigDecimal chargedFare) {
+        this.chargedFare = chargedFare;
+    }
+
+    public boolean involvesZone(int zone) {
+        return fromZone == zone || toZone == zone;
+    }
+
+    public void display() {
+        System.out.println(
+                "ID:" + id +
+                        " Date:" + date +
+                        " From:" + fromZone +
+                        " To:" + toZone +
+                        " Band:" + timeBand +
+                        " Passenger:" + passengerType +
+                        " Zones:" + zonesCrossed +
+                        " Base:£" + baseFare +
+                        " Disc:£" + discountedFare +
+                        " Charged:£" + chargedFare
+        );
     }
 }
