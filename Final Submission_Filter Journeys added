@@ -238,7 +238,51 @@ class CityRideManager {
         }
     }
 
-        System.out.println("Journey added! Charged: £" + charged);
+    //  FILTER JOURNEY
+    public void filterByPassengerType(CityRideDataset.PassengerType type) {
+        List<Journey> results = new ArrayList<>();
+        for (int i = 0; i < journeys.size(); i++) {
+            Journey j = journeys.get(i);
+            if (j.getPassengerType() == type) results.add(j);
+        }
+        printFiltered(results, "Passenger type: " + type);
     }
 
+    public void filterByTimeBand(CityRideDataset.TimeBand band) {
+        List<Journey> results = new ArrayList<>();
+        for (int i = 0; i < journeys.size(); i++) {
+            Journey j = journeys.get(i);
+            if (j.getTimeBand() == band) results.add(j);
+        }
+        printFiltered(results, "Time band: " + band);
+    }
+
+    public void filterByZone(int zone) {
+        List<Journey> results = new ArrayList<>();
+        for (int i = 0; i < journeys.size(); i++) {
+            Journey j = journeys.get(i);
+            if (j.involvesZone(zone)) results.add(j);
+        }
+        printFiltered(results, "Zone involved: " + zone);
+    }
+
+    public void filterByDate(String date) {
+        List<Journey> results = new ArrayList<>();
+        for (int i = 0; i < journeys.size(); i++) {
+            Journey j = journeys.get(i);
+            if (j.getDate().equalsIgnoreCase(date)) results.add(j);
+        }
+        printFiltered(results, "Date: " + date);
+    }
+
+    private void printFiltered(List<Journey> results, String label) {
+        System.out.println("\n--- Filter Results (" + label + ") ---");
+        if (results.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+        for (int i = 0; i < results.size(); i++) {
+            results.get(i).display();
+        }
+    }
    
