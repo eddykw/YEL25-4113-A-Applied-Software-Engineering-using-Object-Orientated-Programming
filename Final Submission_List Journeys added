@@ -226,4 +226,19 @@ class CityRideManager {
         System.out.println("Journey added! Charged: £" + charged);
     }
 
+    //  LIST JOURNEYS
+    public void listAllJourneys() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys recorded.");
+            return;
+        }
+        System.out.println("\n--- All Journeys ---");
+        for (int i = 0; i < journeys.size(); i++) {
+            journeys.get(i).display();
+        }
+    }
+
+        System.out.println("Journey added! Charged: £" + charged);
+    }
+
    
