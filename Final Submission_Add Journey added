@@ -196,3 +196,34 @@ class CityRideManager {
             runningTotals.put(types[i], BigDecimal.ZERO);
         }
     }
+
+    // ADD JOURNEY
+    public void addJourney(String date, int from, int to, CityRideDataset.TimeBand band) {
+        CityRideDataset.PassengerType type = sessionPassengerType;
+
+        Journey j = new Journey(date, from, to, type, band);
+
+        // cap logic
+        BigDecimal cap = CityRideDataset.DAILY_CAP.get(type);
+        BigDecimal current = runningTotals.get(type);
+        BigDecimal discounted = j.getDiscountedFare();
+
+        BigDecimal charged;
+        if (current.compareTo(cap) >= 0) {
+            charged = BigDecimal.ZERO;
+        } else if (current.add(discounted).compareTo(cap) > 0) {
+            charged = cap.subtract(current);
+        } else {
+            charged = discounted;
+        }
+
+        charged = charged.setScale(2, RoundingMode.HALF_UP);
+        j.setChargedFare(charged);
+
+        runningTotals.put(type, current.add(charged));
+        journeys.add(j);
+
+        System.out.println("Journey added! Charged: £" + charged);
+    }
+
+   
