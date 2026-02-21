@@ -160,3 +160,39 @@ class Journey {
         );
     }
 }
+
+
+// =============================================================================
+//   CityRideManager
+// =============================================================================
+class CityRideManager {
+    private List<Journey> journeys = new ArrayList<>();
+
+    // Active session
+    private String sessionName;
+    private CityRideDataset.PassengerType sessionPassengerType;
+
+    // Running totals for caps
+    private Map<CityRideDataset.PassengerType, BigDecimal> runningTotals = new HashMap<>();
+
+    public CityRideManager(String sessionName, CityRideDataset.PassengerType sessionPassengerType) {
+        this.sessionName = sessionName;
+        this.sessionPassengerType = sessionPassengerType;
+        resetTotalsOnly();
+    }
+
+    public String getSessionName() { return sessionName; }
+    public CityRideDataset.PassengerType getSessionPassengerType() { return sessionPassengerType; }
+
+    public void setSessionPassenger(String name, CityRideDataset.PassengerType type) {
+        this.sessionName = name;
+        this.sessionPassengerType = type;
+    }
+
+    private void resetTotalsOnly() {
+        runningTotals.clear();
+        CityRideDataset.PassengerType[] types = CityRideDataset.PassengerType.values();
+        for (int i = 0; i < types.length; i++) {
+            runningTotals.put(types[i], BigDecimal.ZERO);
+        }
+    }
