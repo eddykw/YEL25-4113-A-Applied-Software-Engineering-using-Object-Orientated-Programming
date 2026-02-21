@@ -333,4 +333,13 @@ class CityRideManager {
         }
     }
 
+    // RESET
+    public void resetDay() {
+        journeys.clear();
+        resetTotalsOnly();
+        Journey.resetCounter();
+        System.out.println("Day reset.");
+    }
+
+
    
