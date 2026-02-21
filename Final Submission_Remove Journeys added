@@ -285,4 +285,25 @@ class CityRideManager {
             results.get(i).display();
         }
     }
+    //  REMOVE JOURNEY
+    public void removeJourney(int id) {
+        Journey toRemove = null;
+        for (int i = 0; i < journeys.size(); i++) {
+            if (journeys.get(i).getId() == id) {
+                toRemove = journeys.get(i);
+                break;
+            }
+        }
+
+        if (toRemove == null) {
+            System.out.println("No journey with ID " + id);
+            return;
+        }
+
+        journeys.remove(toRemove);
+
+        rebuildAllCharges();
+
+        System.out.println("Journey removed and totals recalculated.");
+    }
    
