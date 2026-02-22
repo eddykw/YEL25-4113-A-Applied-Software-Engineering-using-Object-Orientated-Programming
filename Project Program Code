@@ -567,6 +567,76 @@ public class CityRideLiteApp {
         System.out.println("Active passenger type: " + manager.getSessionPassengerType() +
                 (manager.getSessionName().isEmpty() ? "" : " | Name: " + manager.getSessionName()));
 
+        int choice;
+        do {
+            printMenu();
+            choice = input.readInt("Enter choice: ");
+
+            switch (choice) {
+                case 1:
+                    String date = input.readNonBlank("Date (dd/mm/yyyy): ");
+                    int from = input.readZone("From Zone (1-5): ");
+                    int to = input.readZone("To Zone (1-5): ");
+                    CityRideDataset.TimeBand band = input.readTimeBand("Time band (Peak/Off-peak): ");
+                    manager.addJourney(date, from, to, band);
+                    break;
+
+                case 2:
+                    manager.listAllJourneys();
+                    break;
+
+                case 3:
+                    filterMenu(input, manager);
+                    break;
+
+                case 4:
+                    manager.showDailySummary();
+                    manager.showTotalsByPassengerType();
+                    manager.showCategoryCounts();
+                    break;
+
+                case 5:
+                    manager.showTotalsByPassengerType();
+                    break;
+
+                case 6:
+                    int id = input.readInt("Journey ID to remove: ");
+                    if (!manager.journeyExists(id)) {
+                        System.out.println("No journey with ID " + id);
+                    } else if (input.readYesNo("Remove journey " + id + "?")) {
+                        manager.removeJourney(id);
+                    } else {
+                        System.out.println("Cancelled.");
+                    }
+                    break;
+
+                case 7:
+                    if (input.readYesNo("Reset all journeys?")) manager.resetDay();
+                    else System.out.println("Cancelled.");
+                    break;
+
+                case 8:
+                    // Switch active passenger session
+                    String newName = input.readOptional("Enter passenger name (optional, press Enter to skip): ");
+                    CityRideDataset.PassengerType newType = input.readPassengerTypeMenu();
+                    manager.setSessionPassenger(newName, newType);
+                    System.out.println("Active passenger changed to: " + manager.getSessionPassengerType() +
+                            (manager.getSessionName().isEmpty() ? "" : " | Name: " + manager.getSessionName()));
+                    break;
+
+                case 9:
+                    System.out.println("Goodbye!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+
+        } while (choice != 9);
+
+        sc.close();
+    }
+
 
 
 
