@@ -461,6 +461,93 @@ class CityRideManager {
     }
 }
 
+// =============================================================================
+// InputHelper - validation + re-prompt
+// =============================================================================
+class InputHelper {
+    private Scanner scanner;
+
+    public InputHelper(Scanner scanner) { this.scanner = scanner; }
+
+    public String readNonBlank(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String s = scanner.nextLine().trim();
+            if (!s.isEmpty()) return s;
+            System.out.println("Input required.");
+        }
+    }
+
+    
+    public String readOptional(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine().trim();
+    }
+
+    public int readInt(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                String s = scanner.nextLine().trim();
+                return Integer.parseInt(s);
+            } catch (Exception e) {
+                System.out.println("Invalid number.");
+            }
+        }
+    }
+
+    public int readZone(String prompt) {
+        while (true) {
+            int z = readInt(prompt);
+            if (z >= 1 && z <= 5) return z;
+            System.out.println("Zone must be 1-5.");
+        }
+    }
+
+    public CityRideDataset.TimeBand readTimeBand(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String s = scanner.nextLine().trim().toLowerCase();
+
+            if (s.equals("peak")) return CityRideDataset.TimeBand.PEAK;
+            if (s.equals("off-peak") || s.equals("offpeak") || s.equals("off peak") || s.equals("off")) {
+                return CityRideDataset.TimeBand.OFF_PEAK;
+            }
+            System.out.println("Enter Peak or Off-peak.");
+        }
+    }
+
+    public CityRideDataset.PassengerType readPassengerTypeMenu() {
+        System.out.println("Select passenger type:");
+        System.out.println("1) Adult");
+        System.out.println("2) Student");
+        System.out.println("3) Child");
+        System.out.println("4) Senior Citizen");
+        int t;
+        while (true) {
+            t = readInt("Choice: ");
+            if (t >= 1 && t <= 4) break;
+            System.out.println("Choose 1-4.");
+        }
+
+        if (t == 1) return CityRideDataset.PassengerType.ADULT;
+        if (t == 2) return CityRideDataset.PassengerType.STUDENT;
+        if (t == 3) return CityRideDataset.PassengerType.CHILD;
+        return CityRideDataset.PassengerType.SENIOR_CITIZEN;
+    }
+
+    public boolean readYesNo(String prompt) {
+        while (true) {
+            System.out.print(prompt + " (yes/no): ");
+            String r = scanner.nextLine().trim().toLowerCase();
+            if (r.equals("yes") || r.equals("y")) return true;
+            if (r.equals("no") || r.equals("n")) return false;
+            System.out.println("Type yes or no.");
+        }
+    }
+}
+
+
 
 
 
