@@ -403,6 +403,64 @@ class CityRideManager {
         }
     }
 
+    //  CATEGORY COUNTS
+    public void showCategoryCounts() {
+        System.out.println("\n--- Category Counts ---");
+
+        int peak = 0;
+        int offPeak = 0;
+
+        // Zone involvement - how many times each zone appears as from or to
+        int[] zoneInvolvement = new int[CityRideDataset.MAX_ZONE + 1]; // index 1..5
+
+        // Route pair counts 
+        Map<String, Integer> routeCounts = new LinkedHashMap<>();
+
+        for (int i = 0; i < journeys.size(); i++) {
+            Journey j = journeys.get(i);
+
+            if (j.getTimeBand() == CityRideDataset.TimeBand.PEAK) peak++;
+            else offPeak++;
+
+            zoneInvolvement[j.getFromZone()]++;
+            zoneInvolvement[j.getToZone()]++;
+
+            String pair = j.getFromZone() + " -> " + j.getToZone();
+            if (!routeCounts.containsKey(pair)) routeCounts.put(pair, 1);
+            else routeCounts.put(pair, routeCounts.get(pair) + 1);
+        }
+
+        System.out.println("Peak journeys: " + peak);
+        System.out.println("Off-peak journeys: " + offPeak);
+
+        System.out.println("Zone involvement counts:");
+        for (int z = CityRideDataset.MIN_ZONE; z <= CityRideDataset.MAX_ZONE; z++) {
+            System.out.println("Zone " + z + ": " + zoneInvolvement[z]);
+        }
+
+        System.out.println("Route (zone pair) counts:");
+        if (routeCounts.isEmpty()) {
+            System.out.println("None");
+        } else {
+            for (String key : routeCounts.keySet()) {
+                System.out.println(key + " : " + routeCounts.get(key));
+            }
+        }
+    }
+
+    //  Helpers 
+    public boolean journeyExists(int id) {
+        for (int i = 0; i < journeys.size(); i++) {
+            if (journeys.get(i).getId() == id) return true;
+        }
+        return false;
+    }
+
+    public boolean hasJourneys() {
+        return !journeys.isEmpty();
+    }
+}
+
 
 
 
