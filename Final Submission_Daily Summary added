@@ -367,6 +367,42 @@ class CityRideManager {
         System.out.println("Average per journey: £" + avg);
         System.out.println("Most expensive journey: ID " + mostExpensive.getId() + " (£" + mostExpensive.getChargedFare() + ")");
     }
+    //  TOTALS BY PASSENGER TYPE
+    public void showTotalsByPassengerType() {
+        System.out.println("\n--- Totals By Passenger Type ---");
+
+        CityRideDataset.PassengerType[] types = CityRideDataset.PassengerType.values();
+        for (int t = 0; t < types.length; t++) {
+            CityRideDataset.PassengerType type = types[t];
+
+            int count = 0;
+            BigDecimal preDiscountSum = BigDecimal.ZERO;
+            BigDecimal postDiscountSum = BigDecimal.ZERO;
+            BigDecimal chargedSum = BigDecimal.ZERO;
+
+            for (int i = 0; i < journeys.size(); i++) {
+                Journey j = journeys.get(i);
+                if (j.getPassengerType() == type) {
+                    count++;
+                    preDiscountSum = preDiscountSum.add(j.getBaseFare());
+                    postDiscountSum = postDiscountSum.add(j.getDiscountedFare());
+                    chargedSum = chargedSum.add(j.getChargedFare());
+                }
+            }
+
+            BigDecimal cap = CityRideDataset.DAILY_CAP.get(type);
+            boolean capReached = runningTotals.get(type).compareTo(cap) >= 0;
+
+            System.out.println("\n" + type);
+            System.out.println("Journeys: " + count);
+            System.out.println("Pre-discount total: £" + preDiscountSum.setScale(2, RoundingMode.HALF_UP));
+            System.out.println("Post-discount total: £" + postDiscountSum.setScale(2, RoundingMode.HALF_UP));
+            System.out.println("Charged total (after cap): £" + chargedSum.setScale(2, RoundingMode.HALF_UP));
+            System.out.println("Daily cap: £" + cap.setScale(2, RoundingMode.HALF_UP));
+            System.out.println("Cap reached: " + (capReached ? "YES" : "NO"));
+        }
+    }
+
 
 
 
