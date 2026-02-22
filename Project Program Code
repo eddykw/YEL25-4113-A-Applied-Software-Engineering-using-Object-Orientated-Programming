@@ -637,6 +637,42 @@ public class CityRideLiteApp {
         sc.close();
     }
 
+    private static void filterMenu(InputHelper input, CityRideManager manager) {
+        System.out.println("\nFilter by:");
+        System.out.println("1) Passenger Type");
+        System.out.println("2) Time Band");
+        System.out.println("3) Zone involved");
+        System.out.println("4) Date");
+        int fc = input.readInt("Choice: ");
+
+        switch (fc) {
+            case 1:
+                CityRideDataset.PassengerType pt = input.readPassengerTypeMenu();
+                manager.filterByPassengerType(pt);
+                break;
+
+            case 2:
+                CityRideDataset.TimeBand band = input.readTimeBand("Time band (Peak/Off-peak): ");
+                manager.filterByTimeBand(band);
+                break;
+
+            case 3:
+                int zone = input.readZone("Zone (1-5): ");
+                manager.filterByZone(zone);
+                break;
+
+            case 4:
+                String date = input.readNonBlank("Date (dd/mm/yyyy): ");
+                manager.filterByDate(date);
+                break;
+
+            default:
+                System.out.println("Invalid filter choice.");
+        }
+    }
+}
+
+
 
 
 
