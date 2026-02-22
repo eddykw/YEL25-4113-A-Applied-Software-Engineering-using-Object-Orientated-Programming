@@ -547,6 +547,27 @@ class InputHelper {
     }
 }
 
+// =============================================================================
+//   CityRideLiteApp - main menu
+// =============================================================================
+public class CityRideLiteApp {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        InputHelper input = new InputHelper(sc);
+
+        System.out.println("Welcome to CityRide Lite!");
+
+        // Active passenger session - type + optional name
+        String name = input.readOptional("Enter passenger name (optional, press Enter to skip): ");
+        CityRideDataset.PassengerType type = input.readPassengerTypeMenu();
+
+        CityRideManager manager = new CityRideManager(name, type);
+
+        System.out.println("Active passenger type: " + manager.getSessionPassengerType() +
+                (manager.getSessionName().isEmpty() ? "" : " | Name: " + manager.getSessionName()));
+
+
 
 
 
