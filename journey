@@ -33,3 +33,28 @@ public class Journey {
         this.discountedFare = BigDecimal.ZERO;
         this.chargedFare = BigDecimal.ZERO;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getRiderName() {
+        return riderName;
+    }
+
+    public void setRiderName(String riderName) {
+        this.riderName = riderName;
+    }
+
+    public String getPassengerType() {
+        return passengerType;
+    }
+
+    public void setPassengerType(String passengerType) {
+        this.passengerType = passengerType;
+    }
+
