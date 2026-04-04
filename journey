@@ -1,0 +1,19 @@
+import java.math.BigDecimal;
+
+public class Journey {
+    private int id;
+    private String riderName;
+    private String passengerType;
+    private String date;
+    private String time;
+    private int fromZone;
+    private int toZone;
+    private int zonesCrossed;
+    private String timeBand;
+    private BigDecimal baseFare;
+    private BigDecimal discountAmount;
+    private BigDecimal discountedFare;
+    private BigDecimal chargedFare;
+
+    public Journey() {
+    }
