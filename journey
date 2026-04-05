@@ -132,3 +132,15 @@ public class Journey {
         this.discountedFare = discountedFare;
     }
 
+    public BigDecimal getChargedFare() {
+        return chargedFare;
+    }
+
+    public void setChargedFare(BigDecimal chargedFare) {
+        this.chargedFare = chargedFare;
+    }
+
+    public boolean involvesZone(int zone) {
+        return fromZone == zone || toZone == zone;
+    }
+
