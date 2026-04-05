@@ -1,0 +1,53 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class JourneyManager {
+    private ArrayList<Journey> journeys;
+    private Scanner scanner;
+
+    private String journeysFile;
+    private String profileFile;
+    private String configFile;
+
+    private String activeName;
+    private String activePassengerType;
+    private String activeDefaultPayment;
+    private int nextId;
+
+    private HashMap<String, BigDecimal> baseFares;
+    private HashMap<String, BigDecimal> discountRates;
+    private HashMap<String, BigDecimal> dailyCaps;
+    private String peakStart;
+    private String peakEnd;
+
+    private final String adminPassword = "admin123";
+
+     public JourneyManager() {
+        scanner = new Scanner(System.in);
+        journeysFile = "journeys.csv";
+        profileFile = "profile.json";
+        configFile = "config.json";
+        journeys = new ArrayList<>();
+        activeName = "";
+        activePassengerType = "";
+        activeDefaultPayment = "";
+        nextId = 1;
+
+        setDefaultConfig();
+        loadConfig();
+        loadProfile();
+        loadJourneys();
+        rebuildAllCharges();
+    }
+
