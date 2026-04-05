@@ -83,3 +83,12 @@ public class Journey {
         this.zonesCrossed = Math.abs(this.toZone - this.fromZone) + 1;
     }
 
+       public int getToZone() {
+        return toZone;
+    }
+
+    public void setToZone(int toZone) {
+        this.toZone = toZone;
+        this.zonesCrossed = Math.abs(this.toZone - this.fromZone) + 1;
+    }
+
