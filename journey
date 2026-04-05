@@ -104,3 +104,15 @@ public class Journey {
         return timeBand;
     }
 
+     public void setTimeBand(String timeBand) {
+        this.timeBand = timeBand;
+    }
+
+    public BigDecimal getBaseFare() {
+        return baseFare;
+    }
+
+    public void setBaseFare(BigDecimal baseFare) {
+        this.baseFare = baseFare;
+    }
+
