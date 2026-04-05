@@ -92,3 +92,15 @@ public class Journey {
         this.zonesCrossed = Math.abs(this.toZone - this.fromZone) + 1;
     }
 
+     public int getZonesCrossed() {
+        return zonesCrossed;
+    }
+
+    public void setZonesCrossed(int zonesCrossed) {
+        this.zonesCrossed = zonesCrossed;
+    }
+
+    public String getTimeBand() {
+        return timeBand;
+    }
+
