@@ -75,3 +75,26 @@ public class JourneyManager {
         scanner.close();
     }
 
+    private void showMainMenu() {
+        System.out.println("\n--- CityRide Lite ---");
+        System.out.println("1. Rider Menu");
+        System.out.println("2. Admin Menu");
+        System.out.println("3. Exit");
+    }
+
+    private void exitProgram() {
+        System.out.println("\n--- Exit ---");
+        if (!journeys.isEmpty()) {
+            System.out.print("Save your journeys before exiting? (yes/no): ");
+            String answer = scanner.nextLine().trim().toLowerCase();
+            if (answer.equals("yes") || answer.equals("y")) {
+                saveJourneys();
+            }
+            System.out.print("Export summary report before exiting? (yes/no): ");
+            String reportAnswer = scanner.nextLine().trim().toLowerCase();
+            if (reportAnswer.equals("yes") || reportAnswer.equals("y")) {
+                exportCsvReport();
+                exportDailyReportForExit();
+            }
+        }
+
