@@ -30,6 +30,26 @@ public class Journey {
     }
 
      public enum TimeBand {
+         public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public int getFromZone() {
+        return fromZone;
+    }
+
+    public void setFromZone(int fromZone) {
+        this.fromZone = fromZone;
+        updateZonesCrossed();
+    }
         PEAK,
         OFF_PEAK;
 
