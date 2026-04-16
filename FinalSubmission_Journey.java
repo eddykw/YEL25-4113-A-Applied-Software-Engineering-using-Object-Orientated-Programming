@@ -70,4 +70,20 @@ public class Journey {
                    int fromZone,
                    int toZone,
                    TimeBand timeBand) {
+        this.id = id;
+        this.riderName = riderName;
+        this.passengerType = passengerType;
+        this.defaultPayment = defaultPayment;
+        this.date = date;
+        this.time = time;
+        this.fromZone = fromZone;
+        this.toZone = toZone;
+        this.timeBand = timeBand;
+        this.zonesCrossed = Math.abs(toZone - fromZone) + 1;
+        this.baseFare = BigDecimal.ZERO;
+        this.discountAmount = BigDecimal.ZERO;
+        this.discountedFare = BigDecimal.ZERO;
+        this.chargedFare = BigDecimal.ZERO;
+        this.capApplied = false;
+    }
 
