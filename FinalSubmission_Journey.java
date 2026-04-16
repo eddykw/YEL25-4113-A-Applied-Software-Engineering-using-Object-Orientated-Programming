@@ -87,3 +87,18 @@ public class Journey {
         this.capApplied = false;
     }
 
+ public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getRiderName() {
+        return riderName;
+    }
+
+    public void setRiderName(String riderName) {
+        this.riderName = riderName;
+    }
