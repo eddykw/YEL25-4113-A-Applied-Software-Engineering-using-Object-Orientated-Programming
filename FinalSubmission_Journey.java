@@ -163,3 +163,18 @@ public class Journey {
         this.fromZone = fromZone;
         updateZonesCrossed();
     }
+     public int getZonesCrossed() {
+        return zonesCrossed;
+    }
+
+    public void setZonesCrossed(int zonesCrossed) {
+        this.zonesCrossed = zonesCrossed;
+    }
+
+    public BigDecimal getBaseFare() {
+        return baseFare;
+    }
+
+    public void setBaseFare(BigDecimal baseFare) {
+        this.baseFare = baseFare;
+    }
