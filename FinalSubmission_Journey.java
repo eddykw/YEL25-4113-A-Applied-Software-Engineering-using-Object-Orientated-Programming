@@ -41,3 +41,20 @@ public class Journey {
             return TimeBand.valueOf(value);
         }
     }
+
+    private int id;
+    private String riderName;
+    private PassengerType passengerType;
+    private String defaultPayment;
+    private String date;
+    private String time;
+    private int fromZone;
+    private int toZone;
+    private TimeBand timeBand;
+    private int zonesCrossed;
+    private BigDecimal baseFare;
+    private BigDecimal discountAmount;
+    private BigDecimal discountedFare;
+    private BigDecimal chargedFare;
+    private boolean capApplied;
+
