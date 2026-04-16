@@ -102,3 +102,23 @@ public class Journey {
     public void setRiderName(String riderName) {
         this.riderName = riderName;
     }
+
+  public PassengerType getPassengerType() {
+        return passengerType;
+    }
+
+    public void setPassengerType(PassengerType passengerType) {
+        this.passengerType = passengerType;
+    }
+
+    public String getDefaultPayment() {
+        return defaultPayment;
+    }
+
+    public void setDefaultPayment(String defaultPayment) {
+        this.defaultPayment = defaultPayment;
+    }
+
+    public String getDate() {
+        return date;
+    }
