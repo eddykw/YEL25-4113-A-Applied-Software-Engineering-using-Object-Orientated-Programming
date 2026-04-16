@@ -58,3 +58,16 @@ public class Journey {
     private BigDecimal chargedFare;
     private boolean capApplied;
 
+    public Journey() {
+    }
+
+    public Journey(int id,
+                   String riderName,
+                   PassengerType passengerType,
+                   String defaultPayment,
+                   String date,
+                   String time,
+                   int fromZone,
+                   int toZone,
+                   TimeBand timeBand) {
+
