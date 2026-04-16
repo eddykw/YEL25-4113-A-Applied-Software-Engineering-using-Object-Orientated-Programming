@@ -16,3 +16,28 @@ public class Journey {
             return PassengerType.valueOf(value);
         }
     }
+
+     public enum PaymentMethod {
+        CONTACTLESS_CARD,
+        TRAVEL_PREPAID_CARD,
+        MOBILE_PAYMENT,
+        OTHER;
+
+        public static PaymentMethod fromString(String value) {
+            value = value.trim().toUpperCase().replace(' ', '_');
+            return PaymentMethod.valueOf(value);
+        }
+    }
+
+     public enum TimeBand {
+        PEAK,
+        OFF_PEAK;
+
+        public static TimeBand fromString(String value) {
+            value = value.trim().toUpperCase().replace('-', '_').replace(' ', '_');
+            if (value.equals("OFFPEAK")) {
+                value = "OFF_PEAK";
+            }
+            return TimeBand.valueOf(value);
+        }
+    }
