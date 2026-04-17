@@ -40,4 +40,20 @@ public class JourneyManager {
     private String peakStart;
     private String peakEnd;
 
+    public JourneyManager() {
+        scanner = new Scanner(System.in);
+        journeys = new ArrayList<>();
+        activeName = "";
+        activePassengerType = null;
+        activeDefaultPayment = "";
+        nextId = 1;
+        lastDeletedJourney = null;
+
+        setDefaultConfig();
+        loadConfig();
+        loadProfile();
+        loadJourneys();
+        rebuildAllCharges();
+    }
+
 
