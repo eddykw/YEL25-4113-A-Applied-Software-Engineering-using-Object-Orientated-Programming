@@ -56,4 +56,27 @@ public class JourneyManager {
         rebuildAllCharges();
     }
 
+    // Starts the program loop
+
+    public void start() {
+        boolean running = true;
+
+        while (running) {
+            showMainMenu();
+            int choice = readInt("Enter your choice: ");
+
+            if (choice == 1) {
+                riderMenu();
+            } else if (choice == 2) {
+                adminMenu();
+            } else if (choice == 3) {
+                exitProgram();
+                running = false;
+            } else {
+                System.out.println("Invalid choice. Try again!");
+            }
+        }
+
+        scanner.close();
+    }
 
