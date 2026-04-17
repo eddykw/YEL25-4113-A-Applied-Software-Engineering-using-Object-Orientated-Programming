@@ -222,3 +222,23 @@ public class Journey {
     private void updateZonesCrossed() {
         this.zonesCrossed = Math.abs(toZone - fromZone) + 1;
     }
+
+ public void display() {
+        System.out.println("ID: " + id);
+        System.out.println("Rider Name: " + riderName);
+        System.out.println("Passenger Type: " + passengerType);
+        System.out.println("Default Payment: " + defaultPayment);
+        System.out.println("Date: " + date);
+        System.out.println("Time: " + time);
+        System.out.println("From Zone: " + fromZone);
+        System.out.println("To Zone: " + toZone);
+        System.out.println("Time Band: " + timeBand);
+        System.out.println("Zones Crossed: " + zonesCrossed);
+        System.out.println("Base Fare: £" + baseFare);
+        System.out.println("Discount Applied: £" + discountAmount);
+        System.out.println("Discounted Fare: £" + discountedFare);
+        System.out.println("Charged Fare: £" + chargedFare);
+        System.out.println("Daily Cap Applied: " + (capApplied ? "YES" : "NO"));
+        System.out.println("-------------------------");
+    }
+}
