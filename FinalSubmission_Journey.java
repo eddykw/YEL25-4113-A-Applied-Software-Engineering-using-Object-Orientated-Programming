@@ -178,3 +178,27 @@ public class Journey {
     public void setBaseFare(BigDecimal baseFare) {
         this.baseFare = baseFare;
     }
+
+   public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getDiscountedFare() {
+        return discountedFare;
+    }
+
+    public void setDiscountedFare(BigDecimal discountedFare) {
+        this.discountedFare = discountedFare;
+    }
+
+    public BigDecimal getChargedFare() {
+        return chargedFare;
+    }
+
+    public void setChargedFare(BigDecimal chargedFare) {
+        this.chargedFare = chargedFare;
+    }
