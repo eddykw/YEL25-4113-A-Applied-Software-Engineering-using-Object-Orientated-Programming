@@ -202,3 +202,23 @@ public class Journey {
     public void setChargedFare(BigDecimal chargedFare) {
         this.chargedFare = chargedFare;
     }
+
+    public boolean isCapApplied() {
+        return capApplied;
+    }
+
+    public void setCapApplied(boolean capApplied) {
+        this.capApplied = capApplied;
+    }
+
+    public boolean involvesZone(int zone) {
+        return fromZone == zone || toZone == zone;
+    }
+
+    public String getZonePairKey() {
+        return fromZone + " -> " + toZone;
+    }
+
+    private void updateZonesCrossed() {
+        this.zonesCrossed = Math.abs(toZone - fromZone) + 1;
+    }
