@@ -403,3 +403,23 @@ public class JourneyManager {
         System.out.println("Journey updated successfully.");
     }
     
+    private void removeJourney() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        System.out.println("\n--- Delete Journey ---");
+        int id = readInt("Enter journey ID to delete (example 1): ");
+        Journey journey = findJourneyById(id);
+
+        if (journey == null) {
+            System.out.println("Error: Invalid ID. No journey found with ID " + id + ".");
+            return;
+        }
+
+        lastDeletedJourney = journey;
+        journeys.remove(journey);
+        rebuildAllCharges();
+        System.out.println("Journey deleted. Totals were recalculated.");
+    }
