@@ -495,3 +495,62 @@ public class JourneyManager {
 
         printSummaryForDate(date, dailyJourneys);
     }
+
+    private void printSummaryForDate(String date, ArrayList<Journey> dailyJourneys) {
+        BigDecimal totalCharged = BigDecimal.ZERO;
+        BigDecimal totalUncapped = BigDecimal.ZERO;
+        Journey mostExpensive = dailyJourneys.get(0);
+        int peakCount = 0;
+        int offPeakCount = 0;
+        int[] zoneCount = new int[6];
+        HashMap<String, Integer> routeCounts = new HashMap<>();
+
+        for (Journey journey : dailyJourneys) {
+            totalCharged = totalCharged.add(journey.getChargedFare());
+            totalUncapped = totalUncapped.add(journey.getDiscountedFare());
+
+            if (journey.getChargedFare().compareTo(mostExpensive.getChargedFare()) > 0) {
+                mostExpensive = journey;
+            }
+
+            if (journey.getTimeBand() == Journey.TimeBand.PEAK) {
+                peakCount++;
+            } else {
+                offPeakCount++;
+            }
+
+            zoneCount[journey.getFromZone()]++;
+            zoneCount[journey.getToZone()]++;
+            incrementRouteCount(routeCounts, journey.getZonePairKey());
+        }
+
+        BigDecimal average = totalCharged.divide(new BigDecimal(dailyJourneys.size()), 2, RoundingMode.HALF_UP);
+        BigDecimal savings = totalUncapped.subtract(totalCharged).setScale(2, RoundingMode.HALF_UP);
+        if (savings.compareTo(BigDecimal.ZERO) < 0) {
+            savings = BigDecimal.ZERO;
+        }
+
+        System.out.println("\n--- Daily Summary ---");
+        System.out.println("Date: " + date);
+        System.out.println("Number of Journeys: " + dailyJourneys.size());
+        System.out.println("Total Cost: £" + totalCharged.setScale(2, RoundingMode.HALF_UP));
+        System.out.println("Average Cost Per Journey: £" + average);
+        System.out.println("Most Expensive Journey: ID " + mostExpensive.getId() + " (£" + mostExpensive.getChargedFare() + ")");
+        System.out.println("Savings Compared to Uncapped Fares: £" + savings);
+        System.out.println("Peak Journeys: " + peakCount);
+        System.out.println("Off-Peak Journeys: " + offPeakCount);
+
+        System.out.println("\nCounts Per Zone:");
+        for (int zone = 1; zone <= 5; zone++) {
+            if (zoneCount[zone] > 0) {
+                System.out.println("Zone " + zone + ": " + zoneCount[zone]);
+            }
+        }
+
+        System.out.println("\nCounts Per Zone Pair:");
+        for (String routeKey : routeCounts.keySet()) {
+            System.out.println(routeKey + ": " + routeCounts.get(routeKey));
+        }
+
+        showCapStatusForDate(date);
+    }
