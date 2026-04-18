@@ -423,3 +423,16 @@ public class JourneyManager {
         rebuildAllCharges();
         System.out.println("Journey deleted. Totals were recalculated.");
     }
+
+    private void undoDelete() {
+        if (lastDeletedJourney == null) {
+            System.out.println("No deleted journey available to restore.");
+            return;
+        }
+
+        journeys.add(lastDeletedJourney);
+        sortJourneysByDateAndTime();
+        rebuildAllCharges();
+        System.out.println("Deleted journey restored successfully.");
+        lastDeletedJourney = null;
+    }
