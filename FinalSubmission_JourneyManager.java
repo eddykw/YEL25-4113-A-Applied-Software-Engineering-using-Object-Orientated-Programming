@@ -562,3 +562,19 @@ public class JourneyManager {
             routeCounts.put(routeKey, 1);
         }
     }
+
+     private void showCapStatusForDate(String date) {
+        System.out.println("\nCap Status:");
+
+        for (Journey.PassengerType passengerType : Journey.PassengerType.values()) {
+            BigDecimal total = getTotalForDateAndPassenger(date, passengerType);
+            BigDecimal cap = getDailyCap(passengerType);
+
+            if (total.compareTo(BigDecimal.ZERO) > 0) {
+                System.out.println(
+                        passengerType + ": £" + total + " / £" + cap +
+                                " | Cap Reached: " + (total.compareTo(cap) >= 0 ? "YES" : "NO")
+                );
+            }
+        }
+    }
