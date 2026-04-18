@@ -448,3 +448,35 @@ public class JourneyManager {
             journey.display();
         }
     }
+
+    private void viewRunningTotals() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        String date = readDate("Enter date for totals (dd/mm/yyyy, example 16/04/2026): ");
+        ArrayList<Journey> dailyJourneys = getJourneysByDate(date);
+
+        if (dailyJourneys.isEmpty()) {
+            System.out.println("No journeys found for that date.");
+            return;
+        }
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        System.out.println("\n--- Running Totals ---");
+        for (Journey journey : dailyJourneys) {
+            total = total.add(journey.getChargedFare());
+            System.out.println(
+                    "Journey ID " + journey.getId() +
+                            " | Charged £" + journey.getChargedFare() +
+                            " | Running Total £" + total.setScale(2, RoundingMode.HALF_UP) +
+                            " | Cap Applied " + (journey.isCapApplied() ? "YES" : "NO")
+            );
+        }
+
+        showCapStatusForDate(date);
+    }
+    
+    
