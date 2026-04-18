@@ -369,3 +369,37 @@ public class JourneyManager {
         System.out.println("Daily Cap Applied: " + (journey.isCapApplied() ? "YES" : "NO"));
         System.out.println("Current running total for that date/passenger: £" + getTotalForDateAndPassenger(date, journey.getPassengerType()));
     }
+
+     private void editJourney() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        System.out.println("\n--- Edit Journey ---");
+        int id = readInt("Enter journey ID to edit (example 1): ");
+        Journey journey = findJourneyById(id);
+
+        if (journey == null) {
+            System.out.println("Error: Invalid ID. No journey found with ID " + id + ".");
+            return;
+        }
+
+        String date = readDate("Enter new date (dd/mm/yyyy, example 16/04/2026): ");
+        String time = readTime("Enter new time (HH:MM, example 18:45): ");
+        int fromZone = readZone("Enter new from zone (1-5, example 1): ");
+        int toZone = readZone("Enter new to zone (1-5, example 4): ");
+        Journey.PassengerType passengerType = readPassengerType();
+
+        journey.setDate(date);
+        journey.setTime(time);
+        journey.setFromZone(fromZone);
+        journey.setToZone(toZone);
+        journey.setPassengerType(passengerType);
+        journey.setTimeBand(determineTimeBand(time));
+
+        sortJourneysByDateAndTime();
+        rebuildAllCharges();
+        System.out.println("Journey updated successfully.");
+    }
+    
