@@ -317,3 +317,15 @@ public class JourneyManager {
 
         System.out.println("Active profile updated!");
     }
+
+    private void viewActiveProfile() {
+        if (!hasActiveProfile()) {
+            System.out.println("No active profile, create or load one first.");
+            return;
+        }
+
+        System.out.println("\n--- Active Profile ---");
+        System.out.println("Name: " + activeName);
+        System.out.println("Passenger Type: " + activePassengerType);
+        System.out.println("Default Payment: " + activeDefaultPayment);
+    }
