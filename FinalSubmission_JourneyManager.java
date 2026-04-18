@@ -479,4 +479,19 @@ public class JourneyManager {
         showCapStatusForDate(date);
     }
     
-    
+     private void showDailySummary() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        String date = readDate("Enter date for summary (dd/mm/yyyy, example 16/04/2026): ");
+        ArrayList<Journey> dailyJourneys = getJourneysByDate(date);
+
+        if (dailyJourneys.isEmpty()) {
+            System.out.println("No journeys found for that date.");
+            return;
+        }
+
+        printSummaryForDate(date, dailyJourneys);
+    }
