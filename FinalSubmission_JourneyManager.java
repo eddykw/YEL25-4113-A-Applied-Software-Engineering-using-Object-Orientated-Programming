@@ -712,3 +712,72 @@ private void exportSummaryTextReport() {
             }
         }
     }
+
+    private void writeSummaryCsvFooter(PrintWriter writer, String date, ArrayList<Journey> dailyJourneys) {
+        SummaryData data = buildSummaryData(date, dailyJourneys);
+
+        writer.println("Total Journeys," + data.numberOfJourneys);
+        writer.println("Total Cost,£" + data.totalCharged);
+        writer.println("Average Cost Per Journey,£" + data.averageCost);
+        writer.println("Most Expensive Journey,ID " + data.mostExpensiveJourneyId + " £" + data.mostExpensiveFare);
+        writer.println("Savings Compared to Uncapped Fares,£" + data.savings);
+        writer.println("Peak Journeys," + data.peakCount);
+        writer.println("Off-Peak Journeys," + data.offPeakCount);
+
+        for (int zone = 1; zone <= 5; zone++) {
+            if (data.zoneCount[zone] > 0) {
+                writer.println("Zone " + zone + " Count," + data.zoneCount[zone]);
+            }
+        }
+
+        for (String routeKey : data.routeCounts.keySet()) {
+            writer.println("Route " + routeKey + "," + data.routeCounts.get(routeKey));
+        }
+
+        for (Journey.PassengerType passengerType : Journey.PassengerType.values()) {
+            BigDecimal total = getTotalForDateAndPassenger(date, passengerType);
+            BigDecimal cap = getDailyCap(passengerType);
+            if (total.compareTo(BigDecimal.ZERO) > 0) {
+                writer.println(passengerType + " Cap Reached," + (total.compareTo(cap) >= 0 ? "YES" : "NO"));
+            }
+        }
+    }
+
+    private SummaryData buildSummaryData(String date, ArrayList<Journey> dailyJourneys) {
+        SummaryData data = new SummaryData();
+        data.numberOfJourneys = dailyJourneys.size();
+        data.zoneCount = new int[6];
+        data.routeCounts = new HashMap<>();
+        Journey mostExpensive = dailyJourneys.get(0);
+
+        for (Journey journey : dailyJourneys) {
+            data.totalCharged = data.totalCharged.add(journey.getChargedFare());
+            data.totalUncapped = data.totalUncapped.add(journey.getDiscountedFare());
+
+            if (journey.getTimeBand() == Journey.TimeBand.PEAK) {
+                data.peakCount++;
+            } else {
+                data.offPeakCount++;
+            }
+
+            if (journey.getChargedFare().compareTo(mostExpensive.getChargedFare()) > 0) {
+                mostExpensive = journey;
+            }
+
+            data.zoneCount[journey.getFromZone()]++;
+            data.zoneCount[journey.getToZone()]++;
+            incrementRouteCount(data.routeCounts, journey.getZonePairKey());
+        }
+
+        data.averageCost = data.totalCharged.divide(new BigDecimal(data.numberOfJourneys), 2, RoundingMode.HALF_UP);
+        data.savings = data.totalUncapped.subtract(data.totalCharged).setScale(2, RoundingMode.HALF_UP);
+        if (data.savings.compareTo(BigDecimal.ZERO) < 0) {
+            data.savings = BigDecimal.ZERO;
+        }
+
+        data.totalCharged = data.totalCharged.setScale(2, RoundingMode.HALF_UP);
+        data.mostExpensiveJourneyId = mostExpensive.getId();
+        data.mostExpensiveFare = mostExpensive.getChargedFare();
+        return data;
+    }
+
