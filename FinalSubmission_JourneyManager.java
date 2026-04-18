@@ -283,4 +283,33 @@ public class JourneyManager {
         putDefaultFare(5, 3, Journey.TimeBand.OFF_PEAK, "3.10");
         putDefaultFare(5, 4, Journey.TimeBand.OFF_PEAK, "2.40");
         putDefaultFare(5, 5, Journey.TimeBand.OFF_PEAK, "1.50");
+    
+    }
+     private void putDefaultFare(int fromZone, int toZone, Journey.TimeBand timeBand, String value) {
+        baseFares.put(buildFareKey(fromZone, toZone, timeBand), money(value));
+    }
+
+    private String buildFareKey(int fromZone, int toZone, Journey.TimeBand timeBand) {
+        return fromZone + "-" + toZone + "-" + timeBand;
+    }
+
+    private BigDecimal money(String amount) {
+        return new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private boolean hasActiveProfile() {
+        return !activeName.isEmpty() && activePassengerType != null && !activeDefaultPayment.isEmpty();
+    }
+
+    private void createOrChangeProfile() {
+        System.out.println("\n--- Create/Change Profile ---");
+        String name = readNonBlank("Enter rider name: ");
+        Journey.PassengerType passengerType = readPassengerType();
+        String paymentMethod = readPaymentMethod();
+
+        activeName = name;
+        activePassengerType = passengerType;
+        activeDefaultPayment = paymentMethod;
+
+        System.out.println("Active profile updated!");
     }
