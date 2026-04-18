@@ -329,3 +329,43 @@ public class JourneyManager {
         System.out.println("Passenger Type: " + activePassengerType);
         System.out.println("Default Payment: " + activeDefaultPayment);
     }
+
+     private void addJourney() {
+        if (!hasActiveProfile()) {
+            System.out.println("Create or load a rider profile first.");
+            return;
+        }
+
+        System.out.println("\n--- Add Journey ---");
+        String date = readDate("Enter date (dd/mm/yyyy, example 16/04/2026): ");
+        String time = readTime("Enter time (HH:MM, example 08:30): ");
+        int fromZone = readZone("Enter from zone (1-5, example 2): ");
+        int toZone = readZone("Enter to zone (1-5, example 3): ");
+
+        Journey.TimeBand timeBand = determineTimeBand(time);
+
+        Journey journey = new Journey(
+                nextId,
+                activeName,
+                activePassengerType,
+                activeDefaultPayment,
+                date,
+                time,
+                fromZone,
+                toZone,
+                timeBand
+        );
+
+        nextId++;
+        journeys.add(journey);
+        sortJourneysByDateAndTime();
+        rebuildAllCharges();
+
+        System.out.println("Journey added successfully.");
+        System.out.println("Time band was calculated automatically as: " + timeBand);
+        System.out.println("Base Fare: £" + journey.getBaseFare());
+        System.out.println("Discount Applied: £" + journey.getDiscountAmount());
+        System.out.println("Charged Fare: £" + journey.getChargedFare());
+        System.out.println("Daily Cap Applied: " + (journey.isCapApplied() ? "YES" : "NO"));
+        System.out.println("Current running total for that date/passenger: £" + getTotalForDateAndPassenger(date, journey.getPassengerType()));
+    }
