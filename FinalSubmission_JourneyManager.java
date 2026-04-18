@@ -212,3 +212,75 @@ public class JourneyManager {
         System.out.println("10. Back");
     }
 
+     // Sets safe default values that are used if no config file exists
+
+    private void setDefaultConfig() {
+        baseFares = new HashMap<>();
+        discountRates = new HashMap<>();
+        dailyCaps = new HashMap<>();
+
+        peakStart = "06:30";
+        peakEnd = "09:30";
+
+        discountRates.put(Journey.PassengerType.ADULT, money("0.00"));
+        discountRates.put(Journey.PassengerType.STUDENT, money("0.25"));
+        discountRates.put(Journey.PassengerType.CHILD, money("0.50"));
+        discountRates.put(Journey.PassengerType.SENIOR_CITIZEN, money("0.30"));
+
+        dailyCaps.put(Journey.PassengerType.ADULT, money("8.00"));
+        dailyCaps.put(Journey.PassengerType.STUDENT, money("6.00"));
+        dailyCaps.put(Journey.PassengerType.CHILD, money("4.00"));
+        dailyCaps.put(Journey.PassengerType.SENIOR_CITIZEN, money("7.00"));
+
+        putDefaultFare(1, 1, Journey.TimeBand.PEAK, "2.50");
+        putDefaultFare(1, 2, Journey.TimeBand.PEAK, "3.20");
+        putDefaultFare(1, 3, Journey.TimeBand.PEAK, "3.80");
+        putDefaultFare(1, 4, Journey.TimeBand.PEAK, "4.40");
+        putDefaultFare(1, 5, Journey.TimeBand.PEAK, "5.00");
+        putDefaultFare(2, 1, Journey.TimeBand.PEAK, "3.20");
+        putDefaultFare(2, 2, Journey.TimeBand.PEAK, "2.30");
+        putDefaultFare(2, 3, Journey.TimeBand.PEAK, "3.10");
+        putDefaultFare(2, 4, Journey.TimeBand.PEAK, "3.80");
+        putDefaultFare(2, 5, Journey.TimeBand.PEAK, "4.50");
+        putDefaultFare(3, 1, Journey.TimeBand.PEAK, "3.80");
+        putDefaultFare(3, 2, Journey.TimeBand.PEAK, "3.10");
+        putDefaultFare(3, 3, Journey.TimeBand.PEAK, "2.10");
+        putDefaultFare(3, 4, Journey.TimeBand.PEAK, "3.00");
+        putDefaultFare(3, 5, Journey.TimeBand.PEAK, "3.70");
+        putDefaultFare(4, 1, Journey.TimeBand.PEAK, "4.40");
+        putDefaultFare(4, 2, Journey.TimeBand.PEAK, "3.80");
+        putDefaultFare(4, 3, Journey.TimeBand.PEAK, "3.00");
+        putDefaultFare(4, 4, Journey.TimeBand.PEAK, "2.00");
+        putDefaultFare(4, 5, Journey.TimeBand.PEAK, "2.90");
+        putDefaultFare(5, 1, Journey.TimeBand.PEAK, "5.00");
+        putDefaultFare(5, 2, Journey.TimeBand.PEAK, "4.50");
+        putDefaultFare(5, 3, Journey.TimeBand.PEAK, "3.70");
+        putDefaultFare(5, 4, Journey.TimeBand.PEAK, "2.90");
+        putDefaultFare(5, 5, Journey.TimeBand.PEAK, "1.90");
+
+        putDefaultFare(1, 1, Journey.TimeBand.OFF_PEAK, "2.00");
+        putDefaultFare(1, 2, Journey.TimeBand.OFF_PEAK, "2.70");
+        putDefaultFare(1, 3, Journey.TimeBand.OFF_PEAK, "3.20");
+        putDefaultFare(1, 4, Journey.TimeBand.OFF_PEAK, "3.70");
+        putDefaultFare(1, 5, Journey.TimeBand.OFF_PEAK, "4.20");
+        putDefaultFare(2, 1, Journey.TimeBand.OFF_PEAK, "2.70");
+        putDefaultFare(2, 2, Journey.TimeBand.OFF_PEAK, "1.90");
+        putDefaultFare(2, 3, Journey.TimeBand.OFF_PEAK, "2.60");
+        putDefaultFare(2, 4, Journey.TimeBand.OFF_PEAK, "3.20");
+        putDefaultFare(2, 5, Journey.TimeBand.OFF_PEAK, "3.80");
+        putDefaultFare(3, 1, Journey.TimeBand.OFF_PEAK, "3.20");
+        putDefaultFare(3, 2, Journey.TimeBand.OFF_PEAK, "2.60");
+        putDefaultFare(3, 3, Journey.TimeBand.OFF_PEAK, "1.70");
+        putDefaultFare(3, 4, Journey.TimeBand.OFF_PEAK, "2.50");
+        putDefaultFare(3, 5, Journey.TimeBand.OFF_PEAK, "3.10");
+        putDefaultFare(4, 1, Journey.TimeBand.OFF_PEAK, "3.70");
+        putDefaultFare(4, 2, Journey.TimeBand.OFF_PEAK, "3.20");
+        putDefaultFare(4, 3, Journey.TimeBand.OFF_PEAK, "2.50");
+        putDefaultFare(4, 4, Journey.TimeBand.OFF_PEAK, "1.60");
+        putDefaultFare(4, 5, Journey.TimeBand.OFF_PEAK, "2.40");
+        putDefaultFare(5, 1, Journey.TimeBand.OFF_PEAK, "4.20");
+        putDefaultFare(5, 2, Journey.TimeBand.OFF_PEAK, "3.80");
+        putDefaultFare(5, 3, Journey.TimeBand.OFF_PEAK, "3.10");
+        putDefaultFare(5, 4, Journey.TimeBand.OFF_PEAK, "2.40");
+        putDefaultFare(5, 5, Journey.TimeBand.OFF_PEAK, "1.50");
+    }
