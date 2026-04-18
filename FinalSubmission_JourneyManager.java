@@ -628,3 +628,87 @@ private void exportSummaryTextReport() {
             System.out.println("Error exporting TXT summary report.");
         }
     }
+
+     private void exportSummaryCsvReport() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        String date = readDate("Enter date for CSV report (dd/mm/yyyy, example 16/04/2026): ");
+        ArrayList<Journey> dailyJourneys = getJourneysByDate(date);
+
+        if (dailyJourneys.isEmpty()) {
+            System.out.println("No journeys found for that date.");
+            return;
+        }
+
+        ensureReportsFolderExists();
+        String filename = buildReportFileName(date, "summary", "csv");
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(filename));
+            writer.println("id,riderName,passengerType,defaultPayment,date,time,fromZone,toZone,timeBand,zonesCrossed,baseFare,discountAmount,discountedFare,chargedFare,capApplied");
+
+            for (Journey journey : dailyJourneys) {
+                writer.println(
+                        journey.getId() + "," +
+                                safeCsv(journey.getRiderName()) + "," +
+                                journey.getPassengerType() + "," +
+                                safeCsv(journey.getDefaultPayment()) + "," +
+                                journey.getDate() + "," +
+                                journey.getTime() + "," +
+                                journey.getFromZone() + "," +
+                                journey.getToZone() + "," +
+                                journey.getTimeBand() + "," +
+                                journey.getZonesCrossed() + "," +
+                                journey.getBaseFare() + "," +
+                                journey.getDiscountAmount() + "," +
+                                journey.getDiscountedFare() + "," +
+                                journey.getChargedFare() + "," +
+                                (journey.isCapApplied() ? "YES" : "NO")
+                );
+            }
+
+            writer.println();
+            writeSummaryCsvFooter(writer, date, dailyJourneys);
+            writer.close();
+            System.out.println("CSV summary report exported to " + filename);
+        } catch (Exception e) {
+            System.out.println("Error exporting CSV summary report.");
+        }
+    }
+
+    private void writeSummaryBlock(PrintWriter writer, String date, ArrayList<Journey> dailyJourneys) {
+        SummaryData data = buildSummaryData(date, dailyJourneys);
+
+        writer.println("Summary:");
+        writer.println("Number of Journeys: " + data.numberOfJourneys);
+        writer.println("Total Cost: £" + data.totalCharged);
+        writer.println("Average Cost Per Journey: £" + data.averageCost);
+        writer.println("Most Expensive Journey: ID " + data.mostExpensiveJourneyId + " (£" + data.mostExpensiveFare + ")");
+        writer.println("Savings Compared to Uncapped Fares: £" + data.savings);
+        writer.println("Peak Journeys: " + data.peakCount);
+        writer.println("Off-Peak Journeys: " + data.offPeakCount);
+        writer.println();
+        writer.println("Counts Per Zone:");
+        for (int zone = 1; zone <= 5; zone++) {
+            if (data.zoneCount[zone] > 0) {
+                writer.println("Zone " + zone + ": " + data.zoneCount[zone]);
+            }
+        }
+        writer.println();
+        writer.println("Counts Per Zone Pair:");
+        for (String routeKey : data.routeCounts.keySet()) {
+            writer.println(routeKey + ": " + data.routeCounts.get(routeKey));
+        }
+        writer.println();
+        writer.println("Cap Status:");
+        for (Journey.PassengerType passengerType : Journey.PassengerType.values()) {
+            BigDecimal total = getTotalForDateAndPassenger(date, passengerType);
+            BigDecimal cap = getDailyCap(passengerType);
+            if (total.compareTo(BigDecimal.ZERO) > 0) {
+                writer.println(passengerType + ": £" + total + " / £" + cap + " | Cap Reached: " + (total.compareTo(cap) >= 0 ? "YES" : "NO"));
+            }
+        }
+    }
