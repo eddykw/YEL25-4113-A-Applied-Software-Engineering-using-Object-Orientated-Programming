@@ -781,3 +781,88 @@ private void exportSummaryTextReport() {
         return data;
     }
 
+    private void importJourneysFromCsv() {
+        String filename = readNonBlank("Enter CSV filename to import (example journeys.csv): ");
+        File file = new File(filename);
+
+        if (!file.exists()) {
+            System.out.println("Error: File not found - " + filename);
+            return;
+        }
+
+        int importedCount = 0;
+        int errorCount = 0;
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line = reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", -1);
+                if (parts.length < 8) {
+                    errorCount++;
+                    continue;
+                }
+
+                try {
+                    int id = nextId;
+                    String riderName = parts[1].trim();
+                    Journey.PassengerType passengerType = Journey.PassengerType.fromString(parts[2].trim());
+                    String date = validateDateValue(parts[3].trim());
+                    String time = validateTimeValue(parts[4].trim());
+                    int fromZone = validateZoneValue(parts[5].trim());
+                    int toZone = validateZoneValue(parts[6].trim());
+                    Journey.TimeBand timeBand = determineTimeBand(time);
+                    String defaultPayment = hasActiveProfile() ? activeDefaultPayment : "CONTACTLESS_CARD";
+
+                    Journey journey = new Journey(id, riderName, passengerType, defaultPayment, date, time, fromZone, toZone, timeBand);
+                    journeys.add(journey);
+                    nextId++;
+                    importedCount++;
+                } catch (Exception e) {
+                    errorCount++;
+                }
+            }
+
+            reader.close();
+            sortJourneysByDateAndTime();
+            rebuildAllCharges();
+            System.out.println(importedCount + " journeys imported.");
+            if (errorCount > 0) {
+                System.out.println(errorCount + " rows had errors and were skipped.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error importing journeys.");
+        }
+    }
+
+    private void exportJourneysBackup() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        String filename = readNonBlank("Enter backup CSV filename (example my_journeys_backup.csv): ");
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(filename));
+            writer.println("id,riderName,passengerType,date,time,fromZone,toZone,timeBand");
+            for (Journey journey : journeys) {
+                writer.println(
+                        journey.getId() + "," +
+                                safeCsv(journey.getRiderName()) + "," +
+                                journey.getPassengerType() + "," +
+                                journey.getDate() + "," +
+                                journey.getTime() + "," +
+                                journey.getFromZone() + "," +
+                                journey.getToZone() + "," +
+                                journey.getTimeBand()
+                );
+            }
+            writer.close();
+            System.out.println("Journeys exported to " + filename);
+        } catch (Exception e) {
+            System.out.println("Error exporting journeys.");
+        }
+    }
+
