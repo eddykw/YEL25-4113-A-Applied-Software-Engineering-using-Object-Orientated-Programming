@@ -872,3 +872,21 @@ private void exportSummaryTextReport() {
         System.out.println("Current day state saved (profile + journeys).");
     }
 
+    private void exitProgram() {
+        System.out.println("\n--- Exit ---");
+        System.out.print("Would you like to save the rider's current day state (profile + journeys)? (yes/no): ");
+        String answer = scanner.nextLine().trim().toLowerCase();
+
+        if (answer.equals("yes") || answer.equals("y")) {
+            saveCurrentState();
+        }
+
+        System.out.print("Would you like to save the active config as well? (yes/no): ");
+        String configAnswer = scanner.nextLine().trim().toLowerCase();
+        if (configAnswer.equals("yes") || configAnswer.equals("y")) {
+            saveConfig();
+        }
+
+        System.out.println("Program ended.");
+    }
+
