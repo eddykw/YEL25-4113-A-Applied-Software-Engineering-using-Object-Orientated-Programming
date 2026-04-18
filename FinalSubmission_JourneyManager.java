@@ -436,3 +436,15 @@ public class JourneyManager {
         System.out.println("Deleted journey restored successfully.");
         lastDeletedJourney = null;
     }
+
+    private void displayJourneys() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        System.out.println("\n--- All Journeys ---");
+        for (Journey journey : journeys) {
+            journey.display();
+        }
+    }
