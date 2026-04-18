@@ -554,3 +554,11 @@ public class JourneyManager {
 
         showCapStatusForDate(date);
     }
+
+    private void incrementRouteCount(HashMap<String, Integer> routeCounts, String routeKey) {
+        if (routeCounts.containsKey(routeKey)) {
+            routeCounts.put(routeKey, routeCounts.get(routeKey) + 1);
+        } else {
+            routeCounts.put(routeKey, 1);
+        }
+    }
