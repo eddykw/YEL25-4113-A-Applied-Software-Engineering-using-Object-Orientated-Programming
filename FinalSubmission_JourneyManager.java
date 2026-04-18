@@ -866,3 +866,9 @@ private void exportSummaryTextReport() {
         }
     }
 
+     private void saveCurrentState() {
+        saveProfile();
+        saveJourneys();
+        System.out.println("Current day state saved (profile + journeys).");
+    }
+
