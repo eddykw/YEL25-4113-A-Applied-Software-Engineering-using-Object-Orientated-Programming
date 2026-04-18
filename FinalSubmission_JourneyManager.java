@@ -79,4 +79,136 @@ public class JourneyManager {
 
         scanner.close();
     }
+    private void showMainMenu() {
+        System.out.println("\n--- CityRide Lite---");
+        System.out.println("1. Rider Menu");
+        System.out.println("2. Admin Menu");
+        System.out.println("3. Exit");
+    }
+
+    private void riderMenu() {
+        boolean inRiderMenu = true;
+
+        while (inRiderMenu) {
+            showRiderMenu();
+            int choice = readInt("Enter your choice: ");
+
+            if (choice == 1) {
+                createOrChangeProfile();
+            } else if (choice == 2) {
+                loadProfile();
+                viewActiveProfile();
+            } else if (choice == 3) {
+                saveProfile();
+                System.out.println("Profile saved!");
+            } else if (choice == 4) {
+                viewActiveProfile();
+            } else if (choice == 5) {
+                addJourney();
+            } else if (choice == 6) {
+                editJourney();
+            } else if (choice == 7) {
+                removeJourney();
+            } else if (choice == 8) {
+                undoDelete();
+            } else if (choice == 9) {
+                displayJourneys();
+            } else if (choice == 10) {
+                viewRunningTotals();
+            } else if (choice == 11) {
+                importJourneysFromCsv();
+            } else if (choice == 12) {
+                exportJourneysBackup();
+            } else if (choice == 13) {
+                showDailySummary();
+            } else if (choice == 14) {
+                exportSummaryCsvReport();
+            } else if (choice == 15) {
+                exportSummaryTextReport();
+            } else if (choice == 16) {
+                saveCurrentState();
+            } else if (choice == 17) {
+                inRiderMenu = false;
+            } else {
+                System.out.println("Invalid choice. Try again!");
+            }
+        }
+    }
+
+    private void showRiderMenu() {
+        System.out.println("\n--- Rider Menu ---");
+        System.out.println("1.  Create/Change Profile");
+        System.out.println("2.  Load Profile from JSON");
+        System.out.println("3.  Save Profile to JSON");
+        System.out.println("4.  View Active Profile");
+        System.out.println("5.  Add Journey");
+        System.out.println("6.  Edit Journey");
+        System.out.println("7.  Delete Journey");
+        System.out.println("8.  Undo Last Delete");
+        System.out.println("9.  View All Journeys");
+        System.out.println("10. View Running Totals/ Cap Status");
+        System.out.println("11. Import Journeys from CSV");
+        System.out.println("12. Export Current Journeys to CSV");
+        System.out.println("13. Daily Summary");
+        System.out.println("14. Export Summary Report as CSV");
+        System.out.println("15. Export Summary Report as TXT");
+        System.out.println("16. Save Current Day State");
+        System.out.println("17. Back");
+    }
+
+    private void adminMenu() {
+        System.out.print("Enter admin password: ");
+        String password = scanner.nextLine().trim();
+
+        if (!ADMIN_PASSWORD.equals(password)) {
+            System.out.println("Incorrect password. Access denied!");
+            return;
+        }
+
+        boolean inAdminMenu = true;
+
+        while (inAdminMenu) {
+            showAdminMenu();
+            int choice = readInt("Enter your choice: ");
+
+            if (choice == 1) {
+                viewConfig();
+            } else if (choice == 2) {
+                updateDiscount();
+            } else if (choice == 3) {
+                deleteDiscount();
+            } else if (choice == 4) {
+                updateDailyCap();
+            } else if (choice == 5) {
+                deleteDailyCap();
+            } else if (choice == 6) {
+                updateBaseFare();
+            } else if (choice == 7) {
+                deleteBaseFare();
+            } else if (choice == 8) {
+                updatePeakWindow();
+            } else if (choice == 9) {
+                saveConfig();
+                System.out.println("Configuration saved!");
+            } else if (choice == 10) {
+                inAdminMenu = false;
+            } else {
+                System.out.println("Invalid choice. Try again!");
+            }
+        }
+    }
+
+    private void showAdminMenu() {
+        System.out.println("\n--- Admin Menu ---");
+        System.out.println("1.  View Active Config");
+        System.out.println("2.  Update Discount Rate");
+        System.out.println("3.  Delete Discount Rate (reset to 0.00)");
+        System.out.println("4.  Update Daily Cap");
+        System.out.println("5.  Delete Daily Cap");
+        System.out.println("6.  Update Base Fare");
+        System.out.println("7.  Delete Base Fare");
+        System.out.println("8.  Update Peak Window");
+        System.out.println("9.  Save Config to JSON");
+        System.out.println("10. Back");
+    }
 
