@@ -578,3 +578,53 @@ public class JourneyManager {
             }
         }
     }
+private void exportSummaryTextReport() {
+        if (journeys.isEmpty()) {
+            System.out.println("No journeys found.");
+            return;
+        }
+
+        String date = readDate("Enter date for TXT report (dd/mm/yyyy, example 16/04/2026): ");
+        ArrayList<Journey> dailyJourneys = getJourneysByDate(date);
+
+        if (dailyJourneys.isEmpty()) {
+            System.out.println("No journeys found for that date.");
+            return;
+        }
+
+        ensureReportsFolderExists();
+        String filename = buildReportFileName(date, "summary", "txt");
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(filename));
+            writer.println("CityRide Lite - Daily Summary Report");
+            writer.println("===================================");
+            writer.println("Rider: " + activeName);
+            writer.println("Passenger Type: " + activePassengerType);
+            writer.println("Default Payment: " + activeDefaultPayment);
+            writer.println("Date: " + date);
+            writer.println();
+            writer.println("Journey Line Items:");
+
+            ArrayList<Journey> daily = getJourneysByDate(date);
+            for (Journey journey : daily) {
+                writer.println(
+                        "ID " + journey.getId() +
+                                " | " + journey.getDate() + " " + journey.getTime() +
+                                " | Zones " + journey.getFromZone() + " -> " + journey.getToZone() +
+                                " | Band " + journey.getTimeBand() +
+                                " | Base £" + journey.getBaseFare() +
+                                " | Discount £" + journey.getDiscountAmount() +
+                                " | Charged £" + journey.getChargedFare() +
+                                " | Cap Applied " + (journey.isCapApplied() ? "YES" : "NO")
+                );
+            }
+
+            writer.println();
+            writeSummaryBlock(writer, date, daily);
+            writer.close();
+            System.out.println("TXT summary report exported to " + filename);
+        } catch (Exception e) {
+            System.out.println("Error exporting TXT summary report.");
+        }
+    }
