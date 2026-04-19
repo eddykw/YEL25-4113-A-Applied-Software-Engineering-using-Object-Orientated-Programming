@@ -1080,3 +1080,130 @@ private void exportSummaryTextReport() {
         rebuildAllCharges();
         System.out.println("Daily cap deleted for " + passengerType + ".");
     }
+
+    private void updateBaseFare() {
+        int fromZone = readZone("Enter from zone (1-5, example 1): ");
+        int toZone = readZone("Enter to zone (1-5, example 4): ");
+        Journey.TimeBand timeBand = readTimeBand();
+        BigDecimal amount = readPositiveDecimal("Enter new base fare (example 3.80): ");
+
+        if (amount == null) {
+            System.out.println("Validation failed. Base fare not saved.");
+            return;
+        }
+
+        baseFares.put(buildFareKey(fromZone, toZone, timeBand), amount);
+        rebuildAllCharges();
+        System.out.println("Base fare updated successfully.");
+    }
+
+    private void deleteBaseFare() {
+        int fromZone = readZone("Enter from zone (1-5, example 1): ");
+        int toZone = readZone("Enter to zone (1-5, example 4): ");
+        Journey.TimeBand timeBand = readTimeBand();
+        String key = buildFareKey(fromZone, toZone, timeBand);
+
+        if (!baseFares.containsKey(key)) {
+            System.out.println("Error: No base fare exists for that zone pair and band. Nothing deleted.");
+            return;
+        }
+
+        baseFares.remove(key);
+        rebuildAllCharges();
+        System.out.println("Base fare deleted successfully.");
+    }
+
+    private void updatePeakWindow() {
+        String newStart = readTime("Enter new peak start time (HH:MM, example 06:30): ");
+        String newEnd = readTime("Enter new peak end time (HH:MM, example 09:30): ");
+
+        LocalTime start = LocalTime.parse(newStart, TIME_FORMATTER);
+        LocalTime end = LocalTime.parse(newEnd, TIME_FORMATTER);
+
+        if (!start.isBefore(end)) {
+            System.out.println("Validation failed. Peak start must be before peak end. Changes not saved.");
+            return;
+        }
+
+        peakStart = newStart;
+        peakEnd = newEnd;
+        updateAllJourneyBandsFromTimes();
+        rebuildAllCharges();
+        System.out.println("Peak window updated successfully.");
+    }
+
+    private void updateAllJourneyBandsFromTimes() {
+        for (Journey journey : journeys) {
+            journey.setTimeBand(determineTimeBand(journey.getTime()));
+        }
+    }
+
+    private void loadJourneys() {
+        journeys = new ArrayList<>();
+        File file = new File(JOURNEYS_FILE);
+
+        if (!file.exists()) {
+            return;
+        }
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line = reader.readLine();
+            int maxId = 0;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", -1);
+                if (parts.length < 8) {
+                    continue;
+                }
+
+                int id = Integer.parseInt(parts[0].trim());
+                String riderName = parts[1].trim();
+                Journey.PassengerType passengerType = Journey.PassengerType.fromString(parts[2].trim());
+                String date = validateDateValue(parts[3].trim());
+                String time = validateTimeValue(parts[4].trim());
+                int fromZone = validateZoneValue(parts[5].trim());
+                int toZone = validateZoneValue(parts[6].trim());
+                Journey.TimeBand timeBand = determineTimeBand(time);
+                String defaultPayment = hasActiveProfile() ? activeDefaultPayment : "CONTACTLESS_CARD";
+
+                Journey journey = new Journey(id, riderName, passengerType, defaultPayment, date, time, fromZone, toZone, timeBand);
+                journeys.add(journey);
+
+                if (id > maxId) {
+                    maxId = id;
+                }
+            }
+
+            reader.close();
+            nextId = maxId + 1;
+            sortJourneysByDateAndTime();
+        } catch (Exception e) {
+            System.out.println("Error loading journeys. Starting with an empty journey list.");
+            journeys = new ArrayList<>();
+            nextId = 1;
+        }
+    }
+
+    private void saveJourneys() {
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(JOURNEYS_FILE));
+            writer.println("id,riderName,passengerType,date,time,fromZone,toZone,timeBand");
+            for (Journey journey : journeys) {
+                writer.println(
+                        journey.getId() + "," +
+                                safeCsv(journey.getRiderName()) + "," +
+                                journey.getPassengerType() + "," +
+                                journey.getDate() + "," +
+                                journey.getTime() + "," +
+                                journey.getFromZone() + "," +
+                                journey.getToZone() + "," +
+                                journey.getTimeBand()
+                );
+            }
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Error saving journeys.");
+        }
+    }
+
