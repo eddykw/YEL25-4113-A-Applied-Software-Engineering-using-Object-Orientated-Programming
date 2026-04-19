@@ -1019,3 +1019,22 @@ private void exportSummaryTextReport() {
         LocalTime secondTime = LocalTime.parse(secondJourney.getTime(), TIME_FORMATTER);
         return firstTime.compareTo(secondTime);
     }
+
+     private void viewConfig() {
+        System.out.println("\n--- Active Config ---");
+        System.out.println("Peak Window: " + peakStart + " to " + peakEnd);
+
+        System.out.println("\nDiscount Rates:");
+        for (Journey.PassengerType passengerType : Journey.PassengerType.values()) {
+            System.out.println(passengerType + ": " + discountRates.getOrDefault(passengerType, BigDecimal.ZERO));
+        }
+
+        System.out.println("\nDaily Caps:");
+        for (Journey.PassengerType passengerType : Journey.PassengerType.values()) {
+            System.out.println(passengerType + ": £" + dailyCaps.getOrDefault(passengerType, BigDecimal.ZERO));
+        }
+
+        System.out.println("\nSample Base Fares:");
+        System.out.println("1 -> 2 PEAK: £" + baseFares.getOrDefault(buildFareKey(1, 2, Journey.TimeBand.PEAK), BigDecimal.ZERO));
+        System.out.println("1 -> 2 OFF_PEAK: £" + baseFares.getOrDefault(buildFareKey(1, 2, Journey.TimeBand.OFF_PEAK), BigDecimal.ZERO));
+    }
