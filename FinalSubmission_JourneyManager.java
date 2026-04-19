@@ -1334,3 +1334,300 @@ private void exportSummaryTextReport() {
             System.out.println("Error saving config.");
         }
     }
+
+     private String readWholeFile(String filename) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line).append("\n");
+        }
+
+        reader.close();
+        return builder.toString();
+    }
+
+    private String getJsonValue(String json, String key) {
+        Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*\"([^\"]*)\"");
+        Matcher matcher = pattern.matcher(json);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    private String escapeJson(String text) {
+        return text.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private String safeCsv(String text) {
+        return text.replace(",", " ");
+    }
+
+    private void ensureReportsFolderExists() {
+        try {
+            Path reportsPath = Paths.get(REPORTS_FOLDER);
+            if (!Files.exists(reportsPath)) {
+                Files.createDirectories(reportsPath);
+            }
+        } catch (Exception e) {
+            System.out.println("Could not create reports folder.");
+        }
+    }
+
+    private String buildReportFileName(String date, String reportLabel, String extension) {
+        String safeName = activeName.isEmpty() ? "unknown_rider" : activeName.trim().toLowerCase().replace(" ", "_");
+        String safeDate = date.replace("/", "-");
+        return REPORTS_FOLDER + File.separator + safeName + "_" + safeDate + "_" + reportLabel + "." + extension;
+    }
+
+    private int readInt(String prompt) {
+        boolean valid = false;
+        int value = 0;
+
+        while (!valid) {
+            try {
+                System.out.print(prompt);
+                value = Integer.parseInt(scanner.nextLine().trim());
+                valid = true;
+            } catch (Exception e) {
+                System.out.println("Error: Enter a whole number only (example 3).");
+            }
+        }
+
+        return value;
+    }
+
+    private String readNonBlank(String prompt) {
+        boolean valid = false;
+        String value = "";
+
+        while (!valid) {
+            System.out.print(prompt);
+            value = scanner.nextLine().trim();
+            if (!value.isEmpty()) {
+                valid = true;
+            } else {
+                System.out.println("Error: Input cannot be blank.");
+            }
+        }
+
+        return value;
+    }
+
+    private Journey.PassengerType readPassengerType() {
+        boolean valid = false;
+        Journey.PassengerType passengerType = null;
+
+        while (!valid) {
+            System.out.println("Select passenger type:");
+            System.out.println("1. Adult");
+            System.out.println("2. Student");
+            System.out.println("3. Child");
+            System.out.println("4. Senior Citizen");
+            int choice = readInt("Enter choice (1-4, example 2): ");
+
+            if (choice == 1) {
+                passengerType = Journey.PassengerType.ADULT;
+                valid = true;
+            } else if (choice == 2) {
+                passengerType = Journey.PassengerType.STUDENT;
+                valid = true;
+            } else if (choice == 3) {
+                passengerType = Journey.PassengerType.CHILD;
+                valid = true;
+            } else if (choice == 4) {
+                passengerType = Journey.PassengerType.SENIOR_CITIZEN;
+                valid = true;
+            } else {
+                System.out.println("Error: Invalid choice. Enter 1, 2, 3 or 4.");
+            }
+        }
+
+        return passengerType;
+    }
+
+    private String readPaymentMethod() {
+        boolean valid = false;
+        String paymentMethod = "";
+
+        while (!valid) {
+            System.out.println("Select default payment method:");
+            System.out.println("1. Contactless Card");
+            System.out.println("2. Travel Prepaid Card");
+            System.out.println("3. Mobile Payment");
+            System.out.println("4. Other");
+            int choice = readInt("Enter choice (1-4, example 1): ");
+
+            if (choice == 1) {
+                paymentMethod = "CONTACTLESS_CARD";
+                valid = true;
+            } else if (choice == 2) {
+                paymentMethod = "TRAVEL_PREPAID_CARD";
+                valid = true;
+            } else if (choice == 3) {
+                paymentMethod = "MOBILE_PAYMENT";
+                valid = true;
+            } else if (choice == 4) {
+                paymentMethod = readNonBlank("Enter payment method name (example Oyster-style card): ");
+                valid = true;
+            } else {
+                System.out.println("Error: Invalid choice. Enter 1, 2, 3 or 4.");
+            }
+        }
+
+        return paymentMethod;
+    }
+
+    private int readZone(String prompt) {
+        boolean valid = false;
+        int zone = 0;
+
+        while (!valid) {
+            zone = readInt(prompt);
+            if (zone >= 1 && zone <= 5) {
+                valid = true;
+            } else {
+                System.out.println("Error: Zone must be between 1 and 5.");
+            }
+        }
+
+        return zone;
+    }
+
+    private String readDate(String prompt) {
+        boolean valid = false;
+        String value = "";
+
+        while (!valid) {
+            System.out.print(prompt);
+            value = scanner.nextLine().trim();
+            try {
+                LocalDate.parse(value, DATE_FORMATTER);
+                valid = true;
+            } catch (DateTimeParseException e) {
+                System.out.println("Error: Date must be in dd/mm/yyyy format (example 16/04/2026).");
+            }
+        }
+
+        return value;
+    }
+
+    private String readTime(String prompt) {
+        boolean valid = false;
+        String value = "";
+
+        while (!valid) {
+            System.out.print(prompt);
+            value = scanner.nextLine().trim();
+            try {
+                LocalTime.parse(value, TIME_FORMATTER);
+                valid = true;
+            } catch (DateTimeParseException e) {
+                System.out.println("Error: Time must be in HH:MM 24-hour format (example 08:30).");
+            }
+        }
+
+        return value;
+    }
+
+    private BigDecimal readPositiveDecimal(String prompt) {
+        boolean valid = false;
+        BigDecimal value = null;
+
+        while (!valid) {
+            try {
+                System.out.print(prompt);
+                value = new BigDecimal(scanner.nextLine().trim()).setScale(2, RoundingMode.HALF_UP);
+                if (value.compareTo(BigDecimal.ZERO) > 0) {
+                    valid = true;
+                } else {
+                    System.out.println("Error: Value must be greater than 0.00.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: Enter a valid amount (example 3.80).");
+            }
+        }
+
+        return value;
+    }
+
+    private BigDecimal readDecimalInRange(String prompt, BigDecimal min, BigDecimal max) {
+        boolean valid = false;
+        BigDecimal value = null;
+
+        while (!valid) {
+            try {
+                System.out.print(prompt);
+                value = new BigDecimal(scanner.nextLine().trim()).setScale(2, RoundingMode.HALF_UP);
+                if (value.compareTo(min) >= 0 && value.compareTo(max) <= 0) {
+                    valid = true;
+                } else {
+                    System.out.println("Error: Value must be between " + min + " and " + max + ".");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: Enter a valid amount (example 0.25).");
+            }
+        }
+
+        return value;
+    }
+
+    private Journey.TimeBand readTimeBand() {
+        boolean valid = false;
+        Journey.TimeBand timeBand = null;
+
+        while (!valid) {
+            System.out.print("Enter time band (PEAK or OFF_PEAK, example PEAK): ");
+            String value = scanner.nextLine().trim().toUpperCase().replace('-', '_').replace(' ', '_');
+
+            if (value.equals("PEAK")) {
+                timeBand = Journey.TimeBand.PEAK;
+                valid = true;
+            } else if (value.equals("OFF_PEAK") || value.equals("OFFPEAK")) {
+                timeBand = Journey.TimeBand.OFF_PEAK;
+                valid = true;
+            } else {
+                System.out.println("Error: Enter PEAK or OFF_PEAK.");
+            }
+        }
+
+        return timeBand;
+    }
+
+    private String validateDateValue(String value) {
+        LocalDate.parse(value, DATE_FORMATTER);
+        return value;
+    }
+
+    private String validateTimeValue(String value) {
+        LocalTime.parse(value, TIME_FORMATTER);
+        return value;
+    }
+
+    private int validateZoneValue(String value) {
+        int zone = Integer.parseInt(value);
+        if (zone < 1 || zone > 5) {
+            throw new IllegalArgumentException("Zone out of range");
+        }
+        return zone;
+    }
+
+    // Simple helper object used when building summaries
+
+    private static class SummaryData {
+        int numberOfJourneys;
+        BigDecimal totalCharged = BigDecimal.ZERO;
+        BigDecimal totalUncapped = BigDecimal.ZERO;
+        BigDecimal averageCost = BigDecimal.ZERO;
+        BigDecimal savings = BigDecimal.ZERO;
+        int mostExpensiveJourneyId;
+        BigDecimal mostExpensiveFare = BigDecimal.ZERO;
+        int peakCount;
+        int offPeakCount;
+        int[] zoneCount;
+        HashMap<String, Integer> routeCounts;
+    }
+}
+
