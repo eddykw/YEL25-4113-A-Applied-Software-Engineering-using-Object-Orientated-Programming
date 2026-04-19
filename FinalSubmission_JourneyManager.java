@@ -1059,3 +1059,24 @@ private void exportSummaryTextReport() {
         rebuildAllCharges();
         System.out.println("Discount reset to 0.00 for " + passengerType + ".");
     }
+
+    private void updateDailyCap() {
+        Journey.PassengerType passengerType = readPassengerType();
+        BigDecimal value = readPositiveDecimal("Enter new daily cap (example 8.00): ");
+
+        if (value == null) {
+            System.out.println("Validation failed. Daily cap not saved.");
+            return;
+        }
+
+        dailyCaps.put(passengerType, value);
+        rebuildAllCharges();
+        System.out.println("Daily cap updated successfully.");
+    }
+
+    private void deleteDailyCap() {
+        Journey.PassengerType passengerType = readPassengerType();
+        dailyCaps.remove(passengerType);
+        rebuildAllCharges();
+        System.out.println("Daily cap deleted for " + passengerType + ".");
+    }
