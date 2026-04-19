@@ -1207,3 +1207,47 @@ private void exportSummaryTextReport() {
         }
     }
 
+     private void loadProfile() {
+        File file = new File(PROFILE_FILE);
+        if (!file.exists()) {
+            return;
+        }
+
+        try {
+            String json = readWholeFile(PROFILE_FILE);
+            String name = getJsonValue(json, "name");
+            String passengerType = getJsonValue(json, "passengerType");
+            String defaultPayment = getJsonValue(json, "defaultPayment");
+
+            if (name != null) {
+                activeName = name;
+            }
+            if (passengerType != null) {
+                activePassengerType = Journey.PassengerType.fromString(passengerType);
+            }
+            if (defaultPayment != null) {
+                activeDefaultPayment = defaultPayment;
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load profile. Starting without an active profile.");
+        }
+    }
+
+    private void saveProfile() {
+        if (!hasActiveProfile()) {
+            System.out.println("No active profile to save.");
+            return;
+        }
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(PROFILE_FILE));
+            writer.println("{");
+            writer.println("  \"name\": \"" + escapeJson(activeName) + "\",");
+            writer.println("  \"passengerType\": \"" + activePassengerType + "\",");
+            writer.println("  \"defaultPayment\": \"" + escapeJson(activeDefaultPayment) + "\"");
+            writer.println("}");
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Error saving profile.");
+        }
+    }
