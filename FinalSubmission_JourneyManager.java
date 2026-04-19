@@ -901,4 +901,36 @@ private void exportSummaryTextReport() {
         return Journey.TimeBand.OFF_PEAK;
     }
 
+    // Rebuilds every fare after changes
+    // This ensures edits, imports, deletes and admin config changes all remain accurate
 
+    private void rebuildAllCharges() {
+        HashMap<String, BigDecimal> totalsByDateAndPassenger = new HashMap<>();
+        sortJourneysByDateAndTime();
+
+        for (Journey journey : journeys) {
+            calculateJourneyValues(journey);
+
+            String totalKey = journey.getDate() + "|" + journey.getPassengerType();
+            BigDecimal currentTotal = totalsByDateAndPassenger.getOrDefault(totalKey, BigDecimal.ZERO);
+            BigDecimal cap = getDailyCap(journey.getPassengerType());
+            BigDecimal discountedFare = journey.getDiscountedFare();
+            BigDecimal chargedFare;
+            boolean capApplied;
+
+            if (currentTotal.compareTo(cap) >= 0) {
+                chargedFare = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+                capApplied = true;
+            } else if (currentTotal.add(discountedFare).compareTo(cap) > 0) {
+                chargedFare = cap.subtract(currentTotal).setScale(2, RoundingMode.HALF_UP);
+                capApplied = true;
+            } else {
+                chargedFare = discountedFare;
+                capApplied = false;
+            }
+
+            journey.setChargedFare(chargedFare);
+            journey.setCapApplied(capApplied);
+            totalsByDateAndPassenger.put(totalKey, currentTotal.add(chargedFare));
+        }
+    }
