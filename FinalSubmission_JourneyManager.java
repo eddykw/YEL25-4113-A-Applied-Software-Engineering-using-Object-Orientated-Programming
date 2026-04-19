@@ -1252,43 +1252,85 @@ private void exportSummaryTextReport() {
         }
     }
 
-     private String readWholeFile(String filename) throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(filename));
-        StringBuilder builder = new StringBuilder();
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            builder.append(line).append("\n");
+     private void loadConfig() {
+        File file = new File(CONFIG_FILE);
+        if (!file.exists()) {
+            System.out.println("No config file found. Using safe default values.");
+            saveConfig();
+            return;
         }
 
-        reader.close();
-        return builder.toString();
-    }
-
-    private String getJsonValue(String json, String key) {
-        Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*\"([^\"]*)\"");
-        Matcher matcher = pattern.matcher(json);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
-
-    private String escapeJson(String text) {
-        return text.replace("\\", "\\\\").replace("\"", "\\\"");
-    }
-
-    private String safeCsv(String text) {
-        return text.replace(",", " ");
-    }
-
-    private void ensureReportsFolderExists() {
         try {
-            Path reportsPath = Paths.get(REPORTS_FOLDER);
-            if (!Files.exists(reportsPath)) {
-                Files.createDirectories(reportsPath);
+            String json = readWholeFile(CONFIG_FILE);
+            String value;
+
+            value = getJsonValue(json, "peakStart");
+            if (value != null) {
+                peakStart = value;
+            }
+
+            value = getJsonValue(json, "peakEnd");
+            if (value != null) {
+                peakEnd = value;
+            }
+
+            loadConfigDecimal(json, "discountAdult", Journey.PassengerType.ADULT, discountRates);
+            loadConfigDecimal(json, "discountStudent", Journey.PassengerType.STUDENT, discountRates);
+            loadConfigDecimal(json, "discountChild", Journey.PassengerType.CHILD, discountRates);
+            loadConfigDecimal(json, "discountSeniorCitizen", Journey.PassengerType.SENIOR_CITIZEN, discountRates);
+
+            loadConfigDecimal(json, "capAdult", Journey.PassengerType.ADULT, dailyCaps);
+            loadConfigDecimal(json, "capStudent", Journey.PassengerType.STUDENT, dailyCaps);
+            loadConfigDecimal(json, "capChild", Journey.PassengerType.CHILD, dailyCaps);
+            loadConfigDecimal(json, "capSeniorCitizen", Journey.PassengerType.SENIOR_CITIZEN, dailyCaps);
+
+            for (String key : new ArrayList<>(baseFares.keySet())) {
+                value = getJsonValue(json, key);
+                if (value != null) {
+                    baseFares.put(key, money(value));
+                }
             }
         } catch (Exception e) {
-            System.out.println("Could not create reports folder.");
+            System.out.println("Error loading config. Default values will be used.");
+            setDefaultConfig();
+        }
+    }
+
+    private void loadConfigDecimal(String json,
+                                   String jsonKey,
+                                   Journey.PassengerType passengerType,
+                                   HashMap<Journey.PassengerType, BigDecimal> targetMap) {
+        String value = getJsonValue(json, jsonKey);
+        if (value != null) {
+            targetMap.put(passengerType, money(value));
+        }
+    }
+
+    private void saveConfig() {
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(CONFIG_FILE));
+            writer.println("{");
+            writer.println("  \"peakStart\": \"" + peakStart + "\",");
+            writer.println("  \"peakEnd\": \"" + peakEnd + "\",");
+            writer.println("  \"discountAdult\": \"" + discountRates.get(Journey.PassengerType.ADULT) + "\",");
+            writer.println("  \"discountStudent\": \"" + discountRates.get(Journey.PassengerType.STUDENT) + "\",");
+            writer.println("  \"discountChild\": \"" + discountRates.get(Journey.PassengerType.CHILD) + "\",");
+            writer.println("  \"discountSeniorCitizen\": \"" + discountRates.get(Journey.PassengerType.SENIOR_CITIZEN) + "\",");
+            writer.println("  \"capAdult\": \"" + dailyCaps.getOrDefault(Journey.PassengerType.ADULT, money("0.00")) + "\",");
+            writer.println("  \"capStudent\": \"" + dailyCaps.getOrDefault(Journey.PassengerType.STUDENT, money("0.00")) + "\",");
+            writer.println("  \"capChild\": \"" + dailyCaps.getOrDefault(Journey.PassengerType.CHILD, money("0.00")) + "\",");
+            writer.println("  \"capSeniorCitizen\": \"" + dailyCaps.getOrDefault(Journey.PassengerType.SENIOR_CITIZEN, money("0.00")) + "\",");
+
+            ArrayList<String> fareKeys = new ArrayList<>(baseFares.keySet());
+            Collections.sort(fareKeys);
+            for (int i = 0; i < fareKeys.size(); i++) {
+                String key = fareKeys.get(i);
+                String comma = (i == fareKeys.size() - 1) ? "" : ",";
+                writer.println("  \"" + key + "\": \"" + baseFares.get(key) + "\"" + comma);
+            }
+            writer.println("}");
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Error saving config.");
         }
     }
