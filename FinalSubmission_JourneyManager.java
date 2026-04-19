@@ -934,3 +934,88 @@ private void exportSummaryTextReport() {
             totalsByDateAndPassenger.put(totalKey, currentTotal.add(chargedFare));
         }
     }
+
+     private void calculateJourneyValues(Journey journey) {
+        BigDecimal baseFare = getBaseFare(journey.getFromZone(), journey.getToZone(), journey.getTimeBand());
+        BigDecimal discountRate = getDiscountRate(journey.getPassengerType());
+        BigDecimal discountAmount = baseFare.multiply(discountRate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal discountedFare = baseFare.subtract(discountAmount).setScale(2, RoundingMode.HALF_UP);
+
+        journey.setZonesCrossed(Math.abs(journey.getToZone() - journey.getFromZone()) + 1);
+        journey.setBaseFare(baseFare);
+        journey.setDiscountAmount(discountAmount);
+        journey.setDiscountedFare(discountedFare);
+    }
+
+    private BigDecimal getBaseFare(int fromZone, int toZone, Journey.TimeBand timeBand) {
+        return baseFares.getOrDefault(buildFareKey(fromZone, toZone, timeBand), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal getDiscountRate(Journey.PassengerType passengerType) {
+        return discountRates.getOrDefault(passengerType, BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal getDailyCap(Journey.PassengerType passengerType) {
+        return dailyCaps.getOrDefault(passengerType, money("999.99")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal getTotalForDateAndPassenger(String date, Journey.PassengerType passengerType) {
+        BigDecimal total = BigDecimal.ZERO;
+        for (Journey journey : journeys) {
+            if (journey.getDate().equals(date) && journey.getPassengerType() == passengerType) {
+                total = total.add(journey.getChargedFare());
+            }
+        }
+        return total.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private ArrayList<Journey> getJourneysByDate(String date) {
+        ArrayList<Journey> dailyJourneys = new ArrayList<>();
+        for (Journey journey : journeys) {
+            if (journey.getDate().equals(date)) {
+                dailyJourneys.add(journey);
+            }
+        }
+        return dailyJourneys;
+    }
+
+    private Journey findJourneyById(int id) {
+        for (Journey journey : journeys) {
+            if (journey.getId() == id) {
+                return journey;
+            }
+        }
+        return null;
+    }
+
+    private void sortJourneysByDateAndTime() {
+        boolean swapped = true;
+
+        while (swapped) {
+            swapped = false;
+
+            for (int index = 0; index < journeys.size() - 1; index++) {
+                Journey currentJourney = journeys.get(index);
+                Journey nextJourney = journeys.get(index + 1);
+
+                if (compareJourneysByDateAndTime(currentJourney, nextJourney) > 0) {
+                    Collections.swap(journeys, index, index + 1);
+                    swapped = true;
+                }
+            }
+        }
+    }
+
+    private int compareJourneysByDateAndTime(Journey firstJourney, Journey secondJourney) {
+        LocalDate firstDate = LocalDate.parse(firstJourney.getDate(), DATE_FORMATTER);
+        LocalDate secondDate = LocalDate.parse(secondJourney.getDate(), DATE_FORMATTER);
+        int dateComparison = firstDate.compareTo(secondDate);
+
+        if (dateComparison != 0) {
+            return dateComparison;
+        }
+
+        LocalTime firstTime = LocalTime.parse(firstJourney.getTime(), TIME_FORMATTER);
+        LocalTime secondTime = LocalTime.parse(secondJourney.getTime(), TIME_FORMATTER);
+        return firstTime.compareTo(secondTime);
+    }
