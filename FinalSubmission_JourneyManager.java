@@ -1038,3 +1038,24 @@ private void exportSummaryTextReport() {
         System.out.println("1 -> 2 PEAK: £" + baseFares.getOrDefault(buildFareKey(1, 2, Journey.TimeBand.PEAK), BigDecimal.ZERO));
         System.out.println("1 -> 2 OFF_PEAK: £" + baseFares.getOrDefault(buildFareKey(1, 2, Journey.TimeBand.OFF_PEAK), BigDecimal.ZERO));
     }
+
+     private void updateDiscount() {
+        Journey.PassengerType passengerType = readPassengerType();
+        BigDecimal value = readDecimalInRange("Enter new discount rate (0.00 to 1.00, example 0.25): ", BigDecimal.ZERO, BigDecimal.ONE);
+
+        if (value == null) {
+            System.out.println("Validation failed. Discount not saved.");
+            return;
+        }
+
+        discountRates.put(passengerType, value);
+        rebuildAllCharges();
+        System.out.println("Discount updated successfully.");
+    }
+
+    private void deleteDiscount() {
+        Journey.PassengerType passengerType = readPassengerType();
+        discountRates.put(passengerType, money("0.00"));
+        rebuildAllCharges();
+        System.out.println("Discount reset to 0.00 for " + passengerType + ".");
+    }
