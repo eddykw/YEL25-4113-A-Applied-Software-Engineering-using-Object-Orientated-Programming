@@ -1251,3 +1251,44 @@ private void exportSummaryTextReport() {
             System.out.println("Error saving profile.");
         }
     }
+
+     private String readWholeFile(String filename) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line).append("\n");
+        }
+
+        reader.close();
+        return builder.toString();
+    }
+
+    private String getJsonValue(String json, String key) {
+        Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*\"([^\"]*)\"");
+        Matcher matcher = pattern.matcher(json);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    private String escapeJson(String text) {
+        return text.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private String safeCsv(String text) {
+        return text.replace(",", " ");
+    }
+
+    private void ensureReportsFolderExists() {
+        try {
+            Path reportsPath = Paths.get(REPORTS_FOLDER);
+            if (!Files.exists(reportsPath)) {
+                Files.createDirectories(reportsPath);
+            }
+        } catch (Exception e) {
+            System.out.println("Could not create reports folder.");
+        }
+    }
