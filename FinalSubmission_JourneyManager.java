@@ -890,3 +890,15 @@ private void exportSummaryTextReport() {
         System.out.println("Program ended.");
     }
 
+    private Journey.TimeBand determineTimeBand(String timeText) {
+        LocalTime journeyTime = LocalTime.parse(timeText, TIME_FORMATTER);
+        LocalTime peakStartTime = LocalTime.parse(peakStart, TIME_FORMATTER);
+        LocalTime peakEndTime = LocalTime.parse(peakEnd, TIME_FORMATTER);
+
+        if ((!journeyTime.isBefore(peakStartTime)) && (!journeyTime.isAfter(peakEndTime))) {
+            return Journey.TimeBand.PEAK;
+        }
+        return Journey.TimeBand.OFF_PEAK;
+    }
+
+
